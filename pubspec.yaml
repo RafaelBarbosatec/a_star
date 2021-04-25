@@ -2,7 +2,7 @@ name: a_star
 description: A* algorithm
 version: 0.0.1
 author: https://github.com/RafaelBarbosatec
-homepage: https://github.com/RafaelBarbosatec
+homepage: https://github.com/RafaelBarbosatec/a_star
 
 environment:
   sdk: ">=2.12.0-0 <3.0.0"
