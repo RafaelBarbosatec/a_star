@@ -1,4 +1,4 @@
-import 'package:a_star/a_star.dart';
+import 'package:a_star_algorithm/a_star.dart';
 import 'package:flutter/material.dart';
 
 void main() {

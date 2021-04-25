@@ -1,4 +1,6 @@
-# a_star
+[![pub package](https://img.shields.io/pub/v/a_star_algorithm.svg)](https://pub.dev/packages/a_star_algorithm)
+
+# a_star_algorithm
 
 A* algorithm
 
