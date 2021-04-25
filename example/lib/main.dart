@@ -199,8 +199,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   MaterialStateProperty<Color> _getColorSelected(TypeInput input) {
     return MaterialStateProperty.all(
-      _typeInput == input ? Colors.blue : Colors.grey,
+      _typeInput == input ? _getColorByType(input) : Colors.grey,
     );
+  }
+
+  Color _getColorByType(TypeInput input) {
+    switch (input) {
+      case TypeInput.START_POINT:
+        return Colors.yellow;
+      case TypeInput.END_POINT:
+        return Colors.green;
+      case TypeInput.BARRIERS:
+        return Colors.red;
+    }
   }
 }
 

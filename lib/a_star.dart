@@ -142,44 +142,32 @@ class AStar {
       current.parent = parent;
       current.g = (current.parent?.g ?? 0) + 1;
 
-      int distX = (end.position.dx.toInt() - current.position.dx.toInt()).abs();
-      int distY = (end.position.dy.toInt() - current.position.dy.toInt()).abs();
-      current.h = distX + distY;
+      current.h = _distance(current, end);
     }
   }
 
   Tile _getFirstTileToStart(Tile startTile, Tile endTile) {
     Tile first = startTile;
-    double diffX = endTile.position.dx - startTile.position.dx;
-    double diffY = endTile.position.dy - startTile.position.dy;
 
-    if (diffY.abs() > diffX.abs()) {
-      if (diffY > 0) {
-        final t = grid[start.dx.toInt()][start.dy.toInt() + 1];
-        if (!t.isBarrier) {
-          first = t;
-        }
-      } else {
-        final t = grid[start.dx.toInt()][start.dy.toInt() - 1];
-        if (!t.isBarrier) {
-          first = t;
-        }
-      }
-    } else {
-      if (diffX > 0) {
-        final t = grid[start.dx.toInt() + 1][start.dy.toInt()];
-        if (!t.isBarrier) {
-          first = t;
-        }
-      } else {
-        final t = grid[start.dx.toInt() - 1][start.dy.toInt()];
-        if (!t.isBarrier) {
-          first = t;
-        }
-      }
-    }
+    final neighbors = startTile.neighbors.where((element) {
+      return !element.isBarrier;
+    });
+
+    first = neighbors.fold(neighbors.first, (previousValue, element) {
+      return _distance(element, endTile) < _distance(previousValue, endTile)
+          ? element
+          : previousValue;
+    });
 
     return first;
+  }
+
+  int _distance(Tile element, Tile endTile) {
+    int distX =
+        (element.position.dx.toInt() - endTile.position.dx.toInt()).abs();
+    int distY =
+        (element.position.dy.toInt() - endTile.position.dy.toInt()).abs();
+    return distX + distY;
   }
 }
 
@@ -194,9 +182,4 @@ class Tile {
   int get f => g + h;
 
   Tile(this.position, this.neighbors, {this.parent, this.isBarrier = false});
-
-  @override
-  String toString() {
-    return '$position / F: $f';
-  }
 }
