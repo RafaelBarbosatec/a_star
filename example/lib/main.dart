@@ -33,6 +33,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   TypeInput _typeInput = TypeInput.START_POINT;
 
+  bool _showDoneList = false;
   Offset start = Offset.zero;
   Offset end = Offset.zero;
   List<Tile> tiles = [];
@@ -61,6 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.all(20.0),
@@ -110,19 +112,33 @@ class _MyHomePageState extends State<MyHomePage> {
                 return _buildItem(e);
               }).toList(),
             ),
-            SizedBox(
-              height: 50,
+            Row(
+              children: [
+                Switch(
+                  value: _showDoneList,
+                  onChanged: (value) {
+                    setState(() {
+                      _showDoneList = value;
+                    });
+                  },
+                ),
+                Text('Show done list')
+              ],
             ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  barriers.clear();
-                  tiles.forEach((element) {
-                    element.selected = false;
+            SizedBox(
+              height: 25,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    barriers.clear();
+                    _cleanTiles();
                   });
-                });
-              },
-              child: Text('CLEAN'),
+                },
+                child: Text('CLEAN'),
+              ),
             ),
           ],
         ),
@@ -133,23 +149,6 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Icon(Icons.map),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
-  }
-
-  void _start() {
-    final result = AStar(
-      rows: rows,
-      columns: columns,
-      start: start,
-      end: end,
-      barriers: barriers,
-    ).findThePath();
-
-    setState(() {
-      tiles.forEach((element) {
-        element.selected =
-            result.where((r) => r == element.position).isNotEmpty;
-      });
-    });
   }
 
   Widget _buildItem(Tile e) {
@@ -163,10 +162,14 @@ class _MyHomePageState extends State<MyHomePage> {
     if (e.position == end) {
       color = Colors.green;
     }
-
     if (e.selected) {
       color = Colors.blue;
     }
+
+    if (e.done) {
+      color = Colors.purple;
+    }
+
     return InkWell(
       onTap: () {
         if (_typeInput == TypeInput.START_POINT) {
@@ -184,7 +187,6 @@ class _MyHomePageState extends State<MyHomePage> {
             barriers.add(e.position);
           }
         }
-        print(e.position);
         setState(() {});
       },
       child: Container(
@@ -213,11 +215,52 @@ class _MyHomePageState extends State<MyHomePage> {
         return Colors.red;
     }
   }
+
+  void _start() {
+    _cleanTiles();
+    List<Offset> done = [];
+
+    final result = AStar(
+      rows: rows,
+      columns: columns,
+      start: start,
+      end: end,
+      barriers: barriers,
+    ).findThePath(doneList: (doneList) {
+      done = doneList;
+    });
+
+    result.forEach((element) {
+      done.remove(element);
+    });
+
+    setState(() {
+      tiles.forEach((element) {
+        element.selected = result.where((r) {
+          return r == element.position;
+        }).isNotEmpty;
+
+        if (_showDoneList) {
+          element.done = done.where((r) {
+            return r == element.position;
+          }).isNotEmpty;
+        }
+      });
+    });
+  }
+
+  void _cleanTiles() {
+    tiles.forEach((element) {
+      element.selected = false;
+      element.done = false;
+    });
+  }
 }
 
 class Tile {
   final Offset position;
   bool selected = false;
+  bool done = false;
 
   Tile(this.position);
 }

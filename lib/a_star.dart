@@ -22,7 +22,7 @@ class AStar {
     grid = _createGrid(rows, columns, barriers);
   }
 
-  List<Offset> findThePath() {
+  List<Offset> findThePath({ValueChanged<List<Offset>>? doneList}) {
     _doneList.clear();
 
     _addNeighbors(grid);
@@ -46,7 +46,7 @@ class AStar {
         tileAux = tileAux.parent;
       }
     }
-
+    doneList?.call(_doneList.map((e) => e.position).toList());
     return path;
   }
 
@@ -122,16 +122,14 @@ class AStar {
     current.neighbors.sort((a, b) => a.f.compareTo(b.f));
 
     _doneList.add(current);
-    try {
-      final nextList = current.neighbors.where((element) {
-        return !_doneList.contains(element);
-      });
-      for (final element in nextList) {
-        final result = _getTileWinner(element, end);
-        if (result != null) return result;
-      }
-    } catch (e) {
-      print('não encontrou: $current');
+
+    final nextList = current.neighbors.where((element) {
+      return !_doneList.contains(element);
+    });
+
+    for (final element in nextList) {
+      final result = _getTileWinner(element, end);
+      if (result != null) return result;
     }
 
     return null;
@@ -162,11 +160,9 @@ class AStar {
     return first;
   }
 
-  int _distance(Tile element, Tile endTile) {
-    int distX =
-        (element.position.dx.toInt() - endTile.position.dx.toInt()).abs();
-    int distY =
-        (element.position.dy.toInt() - endTile.position.dy.toInt()).abs();
+  int _distance(Tile tile1, Tile tile2) {
+    int distX = (tile1.position.dx.toInt() - tile2.position.dx.toInt()).abs();
+    int distY = (tile1.position.dy.toInt() - tile2.position.dy.toInt()).abs();
     return distX + distY;
   }
 }
