@@ -2,6 +2,7 @@ library a_star_algorithm;
 
 import 'package:flutter/cupertino.dart';
 
+/// Class responsible for calculating the best route using the A* algorithm.
 class AStar {
   final int rows;
   final int columns;
@@ -23,6 +24,7 @@ class AStar {
     grid = _createGrid(rows, columns, barriers);
   }
 
+  /// Method that starts the search
   List<Offset> findThePath({ValueChanged<List<Offset>>? doneList}) {
     _doneList.clear();
 
@@ -49,7 +51,8 @@ class AStar {
     return path;
   }
 
-  static List<List<Tile>> _createGrid(
+  /// Method that create the grid
+  List<List<Tile>> _createGrid(
     int rows,
     int columns,
     List<Offset> barriers,
@@ -75,7 +78,8 @@ class AStar {
     return grid;
   }
 
-  static void _addNeighbors(List<List<Tile>> grid) {
+  /// Adds neighbors to cells
+  void _addNeighbors(List<List<Tile>> grid) {
     grid.forEach((_) {
       _.forEach((element) {
         int x = element.position.dx.toInt();
@@ -110,6 +114,7 @@ class AStar {
     });
   }
 
+  /// Method recursive that execute the A* algorithm
   Tile? _getTileWinner(Tile current, Tile end) {
     if (current == end) return current;
     _waitList.remove(current);
@@ -138,6 +143,7 @@ class AStar {
     return null;
   }
 
+  /// Calculates the distance g and h
   void _analiseDistance(Tile current, Tile end, {Tile? parent}) {
     if (current.parent == null) {
       current.parent = parent;
@@ -147,6 +153,7 @@ class AStar {
     }
   }
 
+  /// Calculates the distance between two tiles.
   int _distance(Tile tile1, Tile tile2) {
     int distX = (tile1.position.dx.toInt() - tile2.position.dx.toInt()).abs();
     int distY = (tile1.position.dy.toInt() - tile2.position.dy.toInt()).abs();
@@ -154,6 +161,7 @@ class AStar {
   }
 }
 
+/// Class used to represent each cell
 class Tile {
   final Offset position;
   Tile? parent;
