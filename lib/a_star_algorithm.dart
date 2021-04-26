@@ -27,6 +27,7 @@ class AStar {
   /// Method that starts the search
   List<Offset> findThePath({ValueChanged<List<Offset>>? doneList}) {
     _doneList.clear();
+    _waitList.clear();
 
     _addNeighbors(grid);
 
