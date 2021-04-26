@@ -60,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('A*'),
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -102,6 +102,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     child: Text('BARRIES'),
                   ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        barriers.clear();
+                        _cleanTiles();
+                      });
+                    },
+                    child: Text('CLEAN'),
+                  )
                 ],
               ),
             ),
@@ -124,21 +133,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 Text('Show done list')
               ],
-            ),
-            SizedBox(
-              height: 25,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    barriers.clear();
-                    _cleanTiles();
-                  });
-                },
-                child: Text('CLEAN'),
-              ),
             ),
           ],
         ),

@@ -169,7 +169,7 @@ class AStar {
 
 class Tile {
   final Offset position;
-  Tile? parent;
+  Tile? _parent;
   final List<Tile> neighbors;
   final bool isBarrier;
   int g = 0;
@@ -177,5 +177,15 @@ class Tile {
 
   int get f => g + h;
 
-  Tile(this.position, this.neighbors, {this.parent, this.isBarrier = false});
+  set parent(Tile? t) {
+    if (_parent == null) {
+      _parent = t;
+    }
+  }
+
+  Tile? get parent => _parent;
+
+  Tile(this.position, this.neighbors, {Tile? parent, this.isBarrier = false}) {
+    _parent = parent;
+  }
 }
