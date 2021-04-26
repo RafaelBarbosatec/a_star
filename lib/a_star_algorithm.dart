@@ -9,6 +9,7 @@ class AStar {
   final Offset end;
   final List<Offset> barriers;
   List<Tile> _doneList = [];
+  List<Tile> _waitList = [];
 
   late List<List<Tile>> grid;
 
@@ -30,10 +31,8 @@ class AStar {
     Tile startTile = grid[start.dx.toInt()][start.dy.toInt()];
     Tile endTile = grid[end.dx.toInt()][end.dy.toInt()];
 
-    Tile first = _getFirstTileToStart(startTile, endTile);
-
     Tile? winner = _getTileWinner(
-      first,
+      startTile,
       endTile,
     );
 
@@ -113,23 +112,27 @@ class AStar {
 
   Tile? _getTileWinner(Tile current, Tile end) {
     if (current == end) return current;
-    _analiseDistance(current, end);
+    _waitList.remove(current);
 
     current.neighbors.forEach((element) {
       _analiseDistance(element, end, parent: current);
     });
 
-    current.neighbors.sort((a, b) => a.f.compareTo(b.f));
-
     _doneList.add(current);
 
-    final nextList = current.neighbors.where((element) {
+    _waitList.addAll(current.neighbors.where((element) {
       return !_doneList.contains(element);
-    });
+    }));
 
-    for (final element in nextList) {
-      final result = _getTileWinner(element, end);
-      if (result != null) return result;
+    _waitList.sort((a, b) => a.f.compareTo(b.f));
+
+    for (final element in _waitList) {
+      if (!_doneList.contains(element)) {
+        final result = _getTileWinner(element, end);
+        if (result != null) {
+          return result;
+        }
+      }
     }
 
     return null;
@@ -144,22 +147,6 @@ class AStar {
     }
   }
 
-  Tile _getFirstTileToStart(Tile startTile, Tile endTile) {
-    Tile first = startTile;
-
-    final neighbors = startTile.neighbors.where((element) {
-      return !element.isBarrier;
-    });
-
-    first = neighbors.fold(neighbors.first, (previousValue, element) {
-      return _distance(element, endTile) < _distance(previousValue, endTile)
-          ? element
-          : previousValue;
-    });
-
-    return first;
-  }
-
   int _distance(Tile tile1, Tile tile2) {
     int distX = (tile1.position.dx.toInt() - tile2.position.dx.toInt()).abs();
     int distY = (tile1.position.dy.toInt() - tile2.position.dy.toInt()).abs();
@@ -169,7 +156,7 @@ class AStar {
 
 class Tile {
   final Offset position;
-  Tile? _parent;
+  Tile? parent;
   final List<Tile> neighbors;
   final bool isBarrier;
   int g = 0;
@@ -177,15 +164,5 @@ class Tile {
 
   int get f => g + h;
 
-  set parent(Tile? t) {
-    if (_parent == null) {
-      _parent = t;
-    }
-  }
-
-  Tile? get parent => _parent;
-
-  Tile(this.position, this.neighbors, {Tile? parent, this.isBarrier = false}) {
-    _parent = parent;
-  }
+  Tile(this.position, this.neighbors, {this.parent, this.isBarrier = false});
 }

@@ -228,6 +228,9 @@ class _MyHomePageState extends State<MyHomePage> {
       done.remove(element);
     });
 
+    done.remove(start);
+    done.remove(end);
+
     setState(() {
       tiles.forEach((element) {
         element.selected = result.where((r) {
