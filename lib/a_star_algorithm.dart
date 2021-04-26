@@ -1,4 +1,4 @@
-library a_star;
+library a_star_algorithm;
 
 import 'package:flutter/cupertino.dart';
 
