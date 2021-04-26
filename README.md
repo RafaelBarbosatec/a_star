@@ -2,6 +2,8 @@
 
 # a_star_algorithm
 
+![](https://github.com/RafaelBarbosatec/a_star/blob/main/img/example.jpg)
+
 A* algorithm
 
 # Usage
