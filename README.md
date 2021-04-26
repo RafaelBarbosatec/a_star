@@ -27,4 +27,4 @@ import 'package:flutter/material.dart';
     ).findThePath();
 ```
 
-[Demo Online](http://rafaelbarbosatec.github.io/a_star/)
+[Demo Online](https://rafaelbarbosatec.github.io/a_star/)

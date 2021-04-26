@@ -1,5 +1,5 @@
 name: a_star_algorithm
-description: A* algorithm
+description: Package that uses the A * algorithm to find a way to the destination through the barriers.
 version: 0.0.2
 homepage: https://github.com/RafaelBarbosatec/a_star
 
