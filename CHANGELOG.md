@@ -1,3 +1,8 @@
+## [0.0.4]
+
+* return path empty if the and is a barrier.
+* fix bug Offset inverted.
+
 ## [0.0.3]
 
 * Improvement in the algorithm implementation

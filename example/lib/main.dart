@@ -43,8 +43,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    List.generate(rows, (x) {
-      List.generate(columns, (y) {
+    List.generate(rows, (y) {
+      List.generate(columns, (x) {
         final offset = Offset(x.toDouble(), y.toDouble());
         tiles.add(
           Tile(offset),
@@ -213,7 +213,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void _start() {
     _cleanTiles();
     List<Offset> done = [];
-
     final result = AStar(
       rows: rows,
       columns: columns,

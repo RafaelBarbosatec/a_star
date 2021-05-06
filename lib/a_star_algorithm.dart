@@ -29,6 +29,10 @@ class AStar {
     _doneList.clear();
     _waitList.clear();
 
+    if (barriers.contains(end)) {
+      return [];
+    }
+
     _addNeighbors(grid);
 
     Tile startTile = grid[start.dx.toInt()][start.dy.toInt()];
@@ -59,14 +63,14 @@ class AStar {
     List<Offset> barriers,
   ) {
     List<List<Tile>> grid = [];
-    List.generate(rows, (x) {
-      List<Tile> columnList = [];
-      List.generate(columns, (y) {
+    List.generate(columns, (x) {
+      List<Tile> rowList = [];
+      List.generate(rows, (y) {
         final offset = Offset(x.toDouble(), y.toDouble());
         bool isBarrier = barriers.where((element) {
           return element == offset;
         }).isNotEmpty;
-        columnList.add(
+        rowList.add(
           Tile(
             offset,
             [],
@@ -74,7 +78,7 @@ class AStar {
           ),
         );
       });
-      grid.add(columnList);
+      grid.add(rowList);
     });
     return grid;
   }
