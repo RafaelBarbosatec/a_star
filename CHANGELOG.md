@@ -1,3 +1,8 @@
+## [0.0.5]
+
+* Improvements example.
+* Fix crash when not found a path.
+
 ## [0.0.4]
 
 * return path empty if the and is a barrier.

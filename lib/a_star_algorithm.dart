@@ -136,7 +136,7 @@ class AStar {
 
     _waitList.sort((a, b) => a.f.compareTo(b.f));
 
-    for (final element in _waitList) {
+    for (final element in _waitList.toList()) {
       if (!_doneList.contains(element)) {
         final result = _getTileWinner(element, end);
         if (result != null) {

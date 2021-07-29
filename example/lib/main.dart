@@ -39,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Tile> tiles = [];
   List<Offset> barriers = [];
   int rows = 20;
-  int columns = 30;
+  int columns = 20;
 
   @override
   void initState() {
@@ -60,82 +60,82 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('A*'),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _typeInput = TypeInput.START_POINT;
-                      });
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: _getColorSelected(TypeInput.START_POINT),
-                    ),
-                    child: Text('START'),
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _typeInput = TypeInput.START_POINT;
+                    });
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: _getColorSelected(TypeInput.START_POINT),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _typeInput = TypeInput.END_POINT;
-                      });
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: _getColorSelected(TypeInput.END_POINT),
-                    ),
-                    child: Text('END'),
+                  child: Text('START'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _typeInput = TypeInput.END_POINT;
+                    });
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: _getColorSelected(TypeInput.END_POINT),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _typeInput = TypeInput.BARRIERS;
-                      });
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: _getColorSelected(TypeInput.BARRIERS),
-                    ),
-                    child: Text('BARRIES'),
+                  child: Text('END'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _typeInput = TypeInput.BARRIERS;
+                    });
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: _getColorSelected(TypeInput.BARRIERS),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        barriers.clear();
-                        _cleanTiles();
-                      });
-                    },
-                    child: Text('CLEAN'),
-                  )
-                ],
-              ),
+                  child: Text('BARRIES'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      barriers.clear();
+                      _cleanTiles();
+                    });
+                  },
+                  child: Text('CLEAN'),
+                )
+              ],
             ),
-            GridView.count(
-              shrinkWrap: true,
+          ),
+          Expanded(
+            child: GridView.count(
               crossAxisCount: columns,
               children: tiles.map((e) {
                 return _buildItem(e);
               }).toList(),
             ),
-            Row(
-              children: [
-                Switch(
-                  value: _showDoneList,
-                  onChanged: (value) {
-                    setState(() {
-                      _showDoneList = value;
-                    });
-                  },
-                ),
-                Text('Show done list')
-              ],
-            ),
-          ],
-        ),
+          ),
+          Row(
+            children: [
+              Switch(
+                value: _showDoneList,
+                onChanged: (value) {
+                  setState(() {
+                    _showDoneList = value;
+                  });
+                },
+              ),
+              Text('Show done list')
+            ],
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _start,
