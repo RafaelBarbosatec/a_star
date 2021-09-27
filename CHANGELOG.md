@@ -1,3 +1,6 @@
+## [0.1.1]
+* fix conditional to consider diagonal
+
 ## [0.1.0]
 * Adds param `withDiagonal` to enable and disable diagonal.
 
