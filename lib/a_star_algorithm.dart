@@ -9,6 +9,7 @@ class AStar {
   final Offset start;
   final Offset end;
   final List<Offset> barriers;
+  final withDiagonal;
   List<Tile> _doneList = [];
   List<Tile> _waitList = [];
 
@@ -20,6 +21,7 @@ class AStar {
     required this.start,
     required this.end,
     required this.barriers,
+    this.withDiagonal = true,
   }) {
     grid = _createGrid(rows, columns, barriers);
   }
@@ -89,12 +91,16 @@ class AStar {
       _.forEach((element) {
         int x = element.position.dx.toInt();
         int y = element.position.dy.toInt();
+
+        /// adds in top
         if (y > 0) {
           final t = grid[x][y - 1];
           if (!t.isBarrier) {
             element.neighbors.add(t);
           }
         }
+
+        /// adds in bottom
         if (y < (grid.first.length - 1)) {
           final t = grid[x][y + 1];
           if (!t.isBarrier) {
@@ -102,6 +108,7 @@ class AStar {
           }
         }
 
+        /// adds in left
         if (x > 0) {
           final t = grid[x - 1][y];
           if (!t.isBarrier) {
@@ -109,10 +116,45 @@ class AStar {
           }
         }
 
+        /// adds in right
         if (x < (grid.length - 1)) {
           final t = grid[x + 1][y];
           if (!t.isBarrier) {
             element.neighbors.add(t);
+          }
+        }
+
+        if (withDiagonal) {
+          /// adds in top-left
+          if (y > 0 && x > 0) {
+            final t = grid[x - 1][y - 1];
+            if (!t.isBarrier) {
+              element.neighbors.add(t);
+            }
+          }
+
+          /// adds in top-right
+          if (y > 0 && x < (grid.length - 1)) {
+            final t = grid[x + 1][y - 1];
+            if (!t.isBarrier) {
+              element.neighbors.add(t);
+            }
+          }
+
+          /// adds in bottom-left
+          if (x > 0 && y < (grid.first.length - 1)) {
+            final t = grid[x - 1][y + 1];
+            if (!t.isBarrier) {
+              element.neighbors.add(t);
+            }
+          }
+
+          /// adds in bottom-right
+          if (x < (grid.length - 1) && y < (grid.first.length - 1)) {
+            final t = grid[x + 1][y + 1];
+            if (!t.isBarrier) {
+              element.neighbors.add(t);
+            }
           }
         }
       });

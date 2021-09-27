@@ -1,3 +1,6 @@
+## [0.1.0]
+* Adds param `withDiagonal` to enable and disable diagonal.
+
 ## [0.0.5]
 
 * Improvements example.
