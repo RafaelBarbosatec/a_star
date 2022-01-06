@@ -1,3 +1,6 @@
+## [0.2.1]
+* Add util method `AStar.resumePath`. This resume path like: [(1,2),(1,3),(1,4),(1,5)] = [(1,2),(1,5)]
+
 ## [0.2.0]
 * Fixes result list order
 * Adds start and end Offset in the result.

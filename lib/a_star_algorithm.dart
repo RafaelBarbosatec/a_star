@@ -216,6 +216,116 @@ class AStar {
     int distY = (tile1.position.dy.toInt() - tile2.position.dy.toInt()).abs();
     return distX + distY;
   }
+
+  /// Resume path
+  /// Example:
+  /// [(1,2),(1,3),(1,4),(1,5)] = [(1,2),(1,5)]
+  static List<Offset> resumePath(Iterable<Offset> path) {
+    List<Offset> newPath = _resumeDirection(path, TypeResumeDirection.axisX);
+    newPath = _resumeDirection(newPath, TypeResumeDirection.axisY);
+    newPath = _resumeDirection(newPath, TypeResumeDirection.bottomLeft);
+    newPath = _resumeDirection(newPath, TypeResumeDirection.bottomRight);
+    newPath = _resumeDirection(newPath, TypeResumeDirection.topLeft);
+    newPath = _resumeDirection(newPath, TypeResumeDirection.topRight);
+    return newPath;
+  }
+
+  static List<Offset> _resumeDirection(
+    Iterable<Offset> path,
+    TypeResumeDirection type,
+  ) {
+    List<Offset> newPath = [];
+    List<List<Offset>> listOffset = [];
+    int indexList = -1;
+    double currentX = 0;
+    double currentY = 0;
+
+    path.forEach((element) {
+      final dxDiagonal = element.dx.floor();
+      final dyDiagonal = element.dy.floor();
+
+      switch (type) {
+        case TypeResumeDirection.axisX:
+          if (element.dx == currentX && listOffset.isNotEmpty) {
+            listOffset[indexList].add(element);
+          } else {
+            listOffset.add([element]);
+            indexList++;
+          }
+          break;
+        case TypeResumeDirection.axisY:
+          if (element.dy == currentY && listOffset.isNotEmpty) {
+            listOffset[indexList].add(element);
+          } else {
+            listOffset.add([element]);
+            indexList++;
+          }
+          break;
+        case TypeResumeDirection.topLeft:
+          final nextDxDiagonal = (currentX - 1).floor();
+          final nextDyDiagonal = (currentY - 1).floor();
+          if (dxDiagonal == nextDxDiagonal &&
+              dyDiagonal == nextDyDiagonal &&
+              listOffset.isNotEmpty) {
+            listOffset[indexList].add(element);
+          } else {
+            listOffset.add([element]);
+            indexList++;
+          }
+          break;
+        case TypeResumeDirection.bottomLeft:
+          final nextDxDiagonal = (currentX - 1).floor();
+          final nextDyDiagonal = (currentY + 1).floor();
+          if (dxDiagonal == nextDxDiagonal &&
+              dyDiagonal == nextDyDiagonal &&
+              listOffset.isNotEmpty) {
+            listOffset[indexList].add(element);
+          } else {
+            listOffset.add([element]);
+            indexList++;
+          }
+          break;
+        case TypeResumeDirection.topRight:
+          final nextDxDiagonal = (currentX + 1).floor();
+          final nextDyDiagonal = (currentY - 1).floor();
+          if (dxDiagonal == nextDxDiagonal &&
+              dyDiagonal == nextDyDiagonal &&
+              listOffset.isNotEmpty) {
+            listOffset[indexList].add(element);
+          } else {
+            listOffset.add([element]);
+            indexList++;
+          }
+          break;
+        case TypeResumeDirection.bottomRight:
+          final nextDxDiagonal = (currentX + 1).floor();
+          final nextDyDiagonal = (currentY + 1).floor();
+          if (dxDiagonal == nextDxDiagonal &&
+              dyDiagonal == nextDyDiagonal &&
+              listOffset.isNotEmpty) {
+            listOffset[indexList].add(element);
+          } else {
+            listOffset.add([element]);
+            indexList++;
+          }
+          break;
+      }
+
+      currentX = element.dx;
+      currentY = element.dy;
+    });
+
+    listOffset.forEach((element) {
+      if (element.length > 1) {
+        newPath.add(element.first);
+        newPath.add(element.last);
+      } else {
+        newPath.add(element.first);
+      }
+    });
+
+    return newPath;
+  }
 }
 
 /// Class used to represent each cell
@@ -230,4 +340,13 @@ class Tile {
   int get f => g + h;
 
   Tile(this.position, this.neighbors, {this.parent, this.isBarrier = false});
+}
+
+enum TypeResumeDirection {
+  axisX,
+  axisY,
+  topLeft,
+  bottomLeft,
+  topRight,
+  bottomRight,
 }

@@ -218,8 +218,9 @@ class _MyHomePageState extends State<MyHomePage> {
       done = doneList;
     });
 
+    print(AStar.resumePath(result));
+
     result.forEach((element) {
-      print(element);
       done.remove(element);
     });
 
