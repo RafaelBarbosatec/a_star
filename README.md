@@ -13,7 +13,7 @@ To use this plugin, add `a_star` as a [dependency in your pubspec.yaml file](htt
 
 ``` dart
 import 'package:flutter/material.dart';
- List<Offset> result = AStar(
+ Iterable<Offset> result = AStar(
       rows: 20,
       columns: 20,
       start: Offset(5,0),
