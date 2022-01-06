@@ -149,18 +149,13 @@ class _MyHomePageState extends State<MyHomePage> {
     Color color = Colors.white;
     if (barriers.contains(e.position)) {
       color = Colors.red;
-    }
-    if (e.position == start) {
+    } else if (e.position == start) {
       color = Colors.yellow;
-    }
-    if (e.position == end) {
+    } else if (e.position == end) {
       color = Colors.green;
-    }
-    if (e.selected) {
+    } else if (e.selected) {
       color = Colors.blue;
-    }
-
-    if (e.done) {
+    } else if (e.done) {
       color = Colors.purple;
     }
 
@@ -224,6 +219,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     result.forEach((element) {
+      print(element);
       done.remove(element);
     });
 

@@ -27,7 +27,7 @@ class AStar {
   }
 
   /// Method that starts the search
-  List<Offset> findThePath({ValueChanged<List<Offset>>? doneList}) {
+  Iterable<Offset> findThePath({ValueChanged<List<Offset>>? doneList}) {
     _doneList.clear();
     _waitList.clear();
 
@@ -45,7 +45,7 @@ class AStar {
       endTile,
     );
 
-    List<Offset> path = [];
+    List<Offset> path = [end];
 
     if (winner != null) {
       Tile? tileAux = winner.parent;
@@ -54,8 +54,10 @@ class AStar {
         tileAux = tileAux.parent;
       }
     }
+    path.add(start);
     doneList?.call(_doneList.map((e) => e.position).toList());
-    return path;
+
+    return path.reversed;
   }
 
   /// Method that create the grid

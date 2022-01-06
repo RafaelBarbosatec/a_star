@@ -1,3 +1,7 @@
+## [0.2.0]
+* Fixes result list order
+* Adds start and end Offset in the result.
+
 ## [0.1.1]
 * fix conditional to consider diagonal
 
