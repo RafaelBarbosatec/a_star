@@ -23,7 +23,18 @@ class AStar {
     required this.barriers,
     this.withDiagonal = true,
   }) {
-    grid = _createGrid(rows, columns, barriers);
+    grid = _createGridWithBarriers(rows, columns, barriers);
+  }
+
+  AStar.byFreeSpaces({
+    required this.rows,
+    required this.columns,
+    required this.start,
+    required this.end,
+    required List<Offset> freeSpaces,
+    this.withDiagonal = true,
+  }) : barriers = [] {
+    grid = _createGridWithFreeSpaces(rows, columns, freeSpaces);
   }
 
   /// Method that starts the search
@@ -57,28 +68,55 @@ class AStar {
     path.add(start);
     doneList?.call(_doneList.map((e) => e.position).toList());
 
+    if (winner == null && !_isNeighbors(start, end)) {
+      path.clear();
+    }
     return path.reversed;
   }
 
-  /// Method that create the grid
-  List<List<Tile>> _createGrid(
-    int rows,
-    int columns,
-    List<Offset> barriers,
-  ) {
+  /// Method that create the grid using barriers
+  List<List<Tile>> _createGridWithBarriers(
+      int rows, int columns, List<Offset> barriers) {
     List<List<Tile>> grid = [];
     List.generate(columns, (x) {
       List<Tile> rowList = [];
       List.generate(rows, (y) {
         final offset = Offset(x.toDouble(), y.toDouble());
-        bool isBarrier = barriers.where((element) {
+        bool isBarrie = barriers.where((element) {
           return element == offset;
         }).isNotEmpty;
         rowList.add(
           Tile(
             offset,
             [],
-            isBarrier: isBarrier,
+            isBarrier: isBarrie,
+          ),
+        );
+      });
+      grid.add(rowList);
+    });
+    return grid;
+  }
+
+  /// Method that create the grid using barriers
+  List<List<Tile>> _createGridWithFreeSpaces(
+    int rows,
+    int columns,
+    List<Offset> freeSpaces,
+  ) {
+    List<List<Tile>> grid = [];
+    List.generate(columns, (x) {
+      List<Tile> rowList = [];
+      List.generate(rows, (y) {
+        final offset = Offset(x.toDouble(), y.toDouble());
+        bool isFreeSpace = freeSpaces.where((element) {
+          return element == offset;
+        }).isNotEmpty;
+        rowList.add(
+          Tile(
+            offset,
+            [],
+            isBarrier: !isFreeSpace,
           ),
         );
       });
@@ -325,6 +363,27 @@ class AStar {
     });
 
     return newPath;
+  }
+
+  bool _isNeighbors(Offset start, Offset end) {
+    bool isNeighbor = false;
+    if (start.dx + 1 == end.dx) {
+      isNeighbor = true;
+    }
+
+    if (start.dx - 1 == end.dx) {
+      isNeighbor = true;
+    }
+
+    if (start.dy + 1 == end.dy) {
+      isNeighbor = true;
+    }
+
+    if (start.dy - 1 == end.dy) {
+      isNeighbor = true;
+    }
+
+    return isNeighbor;
   }
 }
 

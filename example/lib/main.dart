@@ -147,14 +147,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildItem(Tile e) {
     Color color = Colors.white;
-    if (barriers.contains(e.position)) {
-      color = Colors.red;
+    if (e.selected) {
+      color = Colors.blue;
     } else if (e.position == start) {
       color = Colors.yellow;
     } else if (e.position == end) {
       color = Colors.green;
-    } else if (e.selected) {
-      color = Colors.blue;
+    } else if (barriers.contains(e.position)) {
+      color = Colors.red;
     } else if (e.done) {
       color = Colors.purple;
     }
