@@ -1,0 +1,287 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:math';
+
+import 'package:a_star_algorithm/a_star_algorithm.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+
+import 'models/tile.dart';
+
+/// Class responsible for calculating the best route using the A* algorithm.
+class AStar {
+  final int rows;
+  final int columns;
+  // ligher than Offset
+  // Point<int> not need to translate toDouble and back
+  final Point<int> start;
+  final Point<int> end;
+  final List<Point<int>> barriers;
+  final List<CostPoint> landCosts;
+
+  /// Perhaps thease are enemies
+  final List<Point<int>> targets;
+  final bool withDiagonal;
+  List<Tile> _doneList = [];
+  List<Tile> _waitList = [];
+
+  late List<List<Tile>> grid;
+
+  AStar({
+    required this.rows,
+    required this.columns,
+    required this.start,
+    required this.end,
+    required this.barriers,
+     this.targets = const [],
+    this.landCosts = const [],
+    this.withDiagonal = false,
+  }) {
+    grid = createGridWithBarriers();
+  }
+
+  AStar.byFreeSpaces({
+    required this.rows,
+    required this.columns,
+    required this.start,
+    required this.end,
+    required List<Point<int>> freeSpaces,
+    this.targets = const [],
+    this.landCosts = const [],
+    this.withDiagonal = true,
+  })  : barriers = [] {
+    grid = createGridWithFree( freeSpaces);
+  }
+
+  /// Method that starts the search
+  Iterable<Point<int>> findThePath({ValueChanged<List<Point<int>>>? doneList}) {
+    _doneList.clear();
+    _waitList.clear();
+    final isTarget = targets.contains(end);
+
+    if (barriers.contains(end)) {
+      return [];
+    }
+
+    Tile startTile = grid[start.x][start.y];
+
+    Tile endTile = grid[end.x][end.y];
+    addNeighbors(grid);
+    if (isTarget) {
+      targetAsNeighbor(endTile, grid);
+    }
+    startTile.g = startTile.cost;
+    Tile? winner = _getTileWinner(
+      startTile,
+      endTile,
+    );
+
+    List<Point<int>> path = [if (!isTarget) end];
+    if (winner?.parent != null) {
+      Tile tileAux = winner!.parent!;
+      for (int i = 0; i < winner.g - 1; i++) {
+        if(tileAux.position == start) {
+          break;
+        }
+        path.add(tileAux.position);
+        tileAux = tileAux.parent!;
+      }
+    }
+    doneList?.call(_doneList.map((e) => e.position).toList());
+
+    if (winner == null && !_isNeighbors(start, end)) {
+      path.clear();
+    }
+    path.add(start);
+
+    return path.reversed;
+  }
+
+  
+  /// Method recursive that execute the A* algorithm
+  Tile? _getTileWinner(Tile current, Tile end) {
+    if (end == current) return current;
+    _waitList.remove(current);
+    current.neighbors.forEach((element) {
+      _analiseDistance(element, end, parent: current);
+    });
+    _doneList.add(current);
+
+    _waitList.addAll(current.neighbors.where((element) {
+      return !_doneList.contains(element);
+    }));
+
+    _waitList.sort((a, b) => a.f.compareTo(b.f));
+
+    // print('waitList ${_waitList.map((e) => e.position.toString() + e.h.toString()).join(' ,')} ');
+
+    for (final element in _waitList.toList()) {
+      if (!_doneList.contains(element)) {
+        final result = _getTileWinner(element, end);
+        if (result != null) {
+          return result;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /// Calculates the distance g and h
+  void _analiseDistance(Tile current, Tile end, {required Tile parent}) {
+    if (current.parent == null) {
+      current.parent = parent;
+      current.g = parent.g + current.cost;
+      current.h = _distance(parent, end);
+      // debugPrint('n--${current.position.toString()} ${current.g} ${current.h} ${current.f}');
+    }
+  }
+
+  /// Calculates the distance between two tiles.
+  int _distance(Tile tile1, Tile tile2) {
+    int distX = (tile1.position.x - tile2.position.x).abs();
+    int distY = (tile1.position.y - tile2.position.y).abs();
+    return distX + distY;
+  }
+
+  /// Resume path
+  /// Example:
+  /// [(1,2),(1,3),(1,4),(1,5)] = [(1,2),(1,5)]
+  static List<Point<int>> _resumePath(Iterable<Point<int>> path) {
+    List<Point<int>> newPath =
+        _resumeDirection(path, TypeResumeDirection.axisX);
+    newPath = _resumeDirection(newPath, TypeResumeDirection.axisY);
+    newPath = _resumeDirection(newPath, TypeResumeDirection.bottomLeft);
+    newPath = _resumeDirection(newPath, TypeResumeDirection.bottomRight);
+    newPath = _resumeDirection(newPath, TypeResumeDirection.topLeft);
+    newPath = _resumeDirection(newPath, TypeResumeDirection.topRight);
+    return newPath;
+  }
+
+  static List<Point<int>> _resumeDirection(
+    Iterable<Point<int>> path,
+    TypeResumeDirection type,
+  ) {
+    List<Point<int>> newPath = [];
+    List<List<Point<int>>> listPoint = [];
+    int indexList = -1;
+    int currentX = 0;
+    int currentY = 0;
+
+    for (var element in path) {
+      final dxDiagonal = element.x;
+      final dyDiagonal = element.y;
+
+      switch (type) {
+        case TypeResumeDirection.axisX:
+          if (element.x == currentX && listPoint.isNotEmpty) {
+            listPoint[indexList].add(element);
+          } else {
+            listPoint.add([element]);
+            indexList++;
+          }
+          break;
+        case TypeResumeDirection.axisY:
+          if (element.y == currentY && listPoint.isNotEmpty) {
+            listPoint[indexList].add(element);
+          } else {
+            listPoint.add([element]);
+            indexList++;
+          }
+          break;
+        case TypeResumeDirection.topLeft:
+          final nextDxDiagonal = (currentX - 1);
+          final nextDyDiagonal = (currentY - 1);
+          if (dxDiagonal == nextDxDiagonal &&
+              dyDiagonal == nextDyDiagonal &&
+              listPoint.isNotEmpty) {
+            listPoint[indexList].add(element);
+          } else {
+            listPoint.add([element]);
+            indexList++;
+          }
+          break;
+        case TypeResumeDirection.bottomLeft:
+          final nextDxDiagonal = (currentX - 1);
+          final nextDyDiagonal = (currentY + 1);
+          if (dxDiagonal == nextDxDiagonal &&
+              dyDiagonal == nextDyDiagonal &&
+              listPoint.isNotEmpty) {
+            listPoint[indexList].add(element);
+          } else {
+            listPoint.add([element]);
+            indexList++;
+          }
+          break;
+        case TypeResumeDirection.topRight:
+          final nextDxDiagonal = (currentX + 1).floor();
+          final nextDyDiagonal = (currentY - 1).floor();
+          if (dxDiagonal == nextDxDiagonal &&
+              dyDiagonal == nextDyDiagonal &&
+              listPoint.isNotEmpty) {
+            listPoint[indexList].add(element);
+          } else {
+            listPoint.add([element]);
+            indexList++;
+          }
+          break;
+        case TypeResumeDirection.bottomRight:
+          final nextDxDiagonal = (currentX + 1);
+          final nextDyDiagonal = (currentY + 1);
+          if (dxDiagonal == nextDxDiagonal &&
+              dyDiagonal == nextDyDiagonal &&
+              listPoint.isNotEmpty) {
+            listPoint[indexList].add(element);
+          } else {
+            listPoint.add([element]);
+            indexList++;
+          }
+          break;
+      }
+
+      currentX = element.x;
+      currentY = element.y;
+    }
+
+    // for in faster than forEach
+    for (var element in listPoint) {
+      if (element.length > 1) {
+        newPath.add(element.first);
+        newPath.add(element.last);
+      } else {
+        newPath.add(element.first);
+      }
+    }
+
+    return newPath;
+  }
+
+  bool _isNeighbors(Point<int> start, Point<int> end) {
+    bool isNeighbor = false;
+    if (start.x + 1 == end.x) {
+      isNeighbor = true;
+    }
+
+    if (start.x - 1 == end.x) {
+      isNeighbor = true;
+    }
+
+    if (start.y + 1 == end.y) {
+      isNeighbor = true;
+    }
+
+    if (start.y - 1 == end.y) {
+      isNeighbor = true;
+    }
+
+    return isNeighbor;
+  }
+}
+
+enum TypeResumeDirection {
+  axisX,
+  axisY,
+  topLeft,
+  bottomLeft,
+  topRight,
+  bottomRight,
+}
