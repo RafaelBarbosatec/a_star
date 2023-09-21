@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:a_star_algorithm/a_star_algorithm.dart';
 import 'package:flutter/material.dart';
 
@@ -34,10 +36,10 @@ class _MyHomePageState extends State<MyHomePage> {
   TypeInput _typeInput = TypeInput.START_POINT;
 
   bool _showDoneList = false;
-  Offset start = Offset.zero;
-  Offset end = Offset.zero;
+  Point<int> start = Point(0, 0);
+  Point<int> end = Point(0, 0);
   List<Tile> tiles = [];
-  List<Offset> barriers = [];
+  List<Point<int>> barriers = [];
   int rows = 20;
   int columns = 20;
 
@@ -45,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     List.generate(rows, (y) {
       List.generate(columns, (x) {
-        final offset = Offset(x.toDouble(), y.toDouble());
+        final offset = Point(x, y);
         tiles.add(
           Tile(offset),
         );
@@ -207,7 +209,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _start() {
     _cleanTiles();
-    List<Offset> done = [];
+    List<Point<int>> done = [];
     final result = AStar(
       rows: rows,
       columns: columns,
@@ -251,7 +253,7 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class Tile {
-  final Offset position;
+  final Point<int> position;
   bool selected = false;
   bool done = false;
 
