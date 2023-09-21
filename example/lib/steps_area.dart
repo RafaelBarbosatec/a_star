@@ -4,10 +4,10 @@ import 'package:a_star_algorithm/a_star_algorithm.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(TurnAreaApp());
+  runApp(StepsAreaApp());
 }
 
-class TurnAreaApp extends StatelessWidget {
+class StepsAreaApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
