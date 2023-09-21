@@ -12,7 +12,7 @@ class StepsAreaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Turn Area Demo',
+      title: 'Flutter Steps Area Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   /// turn based area
   List<Point<int>> stepsArea = [];
-  List<Point<int>> enemyMeelleArea = [];
+  List<Point<int>> foundedEnemies = [];
   int rows = 20;
   int columns = 20;
 
@@ -205,48 +205,60 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _buildItem(Tile e) {
     Color color = Colors.white;
     String text = '1';
+    IconData? icon;
     if (lands.contains(e.position)) {
-      color = Colors.cyan;
+      color = Colors.cyan.withOpacity(0.5);
       text = lands
           .firstWhere((i) => i.x == e.position.x && i.y == e.position.y)
           .cost
           .toString();
     }
     if (barriers.contains(e.position)) {
-      color = Colors.red.withOpacity(.7);
-      text = 'barrier';
+      color = Colors.red;
+      icon = Icons.do_not_step_outlined;
     }
     if (e.done) {
-      color = Colors.black.withOpacity(.2);
+      color = Colors.black;
     }
     if (e.selected && _showDoneList) {
-      color = Colors.green.withOpacity(.7);
+      color = Colors.green;
     }
 
     if (targets.contains(e.position)) {
-      color = Colors.purple.withOpacity(.7);
-      text = text + '\ntarget';
+      color = Colors.purple;
+      icon = Icons.man;
     }
 
     if (e.position == start) {
-      color = Colors.yellow.withOpacity(.7);
-      text = text + '\nstart';
+      color = Colors.black;
+      icon = Icons.person;
     }
     if (e.position == end) {
-      color = Colors.green.withOpacity(.7);
-      text = text + '\nend';
+      color = Colors.green;
+      icon = Icons.flag;
+    }
+    if(stepsArea.contains(e.position)){
+      color = Colors.green;
+    }
+    if(targets.contains(e.position)){
+      color = Colors.purple;
     }
 
     return Ink(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.black54, width: 1.0),
-        color: color,
+        color: color.withOpacity(.3),
       ),
       height: 10,
       child: InkWell(
-        child: Text(
-          text,
-          style: TextStyle(fontSize: 9, color: Colors.black),
+        child: Stack(
+          children: [
+            if(icon !=null) Center(child: Icon(icon,color: color)),
+            Text(
+              text,
+              style: TextStyle(fontSize: 9, color: Colors.black),
+            ),
+          ],
         ),
         onLongPress: () {},
         onDoubleTap: () {},
@@ -327,7 +339,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     setState(() {
       stepsArea = List.of(result.$1);
-      enemyMeelleArea = List.of(result.$2);
+      foundedEnemies = List.of(result.$2);
     });
   }
 
