@@ -9,30 +9,40 @@ extension FindStepsExt on AStar {
   /// s1 path area
   ///
   /// s2 founded enemies
-  (List<Point<int>>, List<Point<int>>) findSteps({required int steps}) {
+  List<Point<int>> findSteps({required int steps}) {
     addNeighbors(grid);
 
     Tile startTile = grid[start.x][start.y];
     final List<Tile> totalArea = [startTile];
-    final List<Tile> enemies =
-        startTile.connectors.where((c) => c.isTarget).toList();
-    final List<Tile> currentArea = [...startTile.neighbors];
     final List<Tile> waitArea = [];
-    if (currentArea.isEmpty) return ([], enemies.toPoints());
-    for (var i = 0; i < steps; i++) {
-      for (var nextTile in currentArea) {
-        for (var n in nextTile.neighbors) {
-          if (totalArea.contains(n)) continue;
-          if (n.isTarget && !enemies.contains(n)) enemies.add(n);
-          waitArea.add(n);
+
+    final List<Tile> currentArea = [...startTile.neighbors];
+    if (currentArea.isEmpty) return [];
+    for (var element in startTile.neighbors) {
+      element.parent = startTile;
+      element.g = element.cost + startTile.cost;
+    }
+    for (var i = 1; i < steps + 2 ; i++) {
+      if (currentArea.isEmpty) continue;
+      for (var currentTile in currentArea) {
+        if (currentTile.g <= i) {
+          totalArea.add(currentTile);
+          for (var n in currentTile.neighbors) {
+            if (totalArea.contains(n)) continue;
+            if(n.parent == null){
+              n.parent = currentTile;
+              n.g = n.cost + currentTile.g;
+            }
+            waitArea.add(n);
+          }
+        } else {
+          waitArea.add(currentTile);
         }
       }
-      totalArea.addAll(currentArea);
-      if (waitArea.isEmpty) break;
       currentArea.clear();
       currentArea.addAll(waitArea);
       waitArea.clear();
     }
-    return (totalArea.toPoints(), enemies.toPoints());
+    return totalArea.toPoints();
   }
 }

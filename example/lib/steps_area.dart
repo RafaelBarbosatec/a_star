@@ -28,7 +28,8 @@ enum TypeInput {
   TARGETS,
   WATER,
   STEPS,
-  TARGETS_STEPs,
+  FOUNDED_TARGET,
+  TARGETS_STEPS,
 }
 
 class MyHomePage extends StatefulWidget {
@@ -318,7 +319,8 @@ class _MyHomePageState extends State<MyHomePage> {
         return Colors.blue;
       case TypeInput.STEPS:
         return Colors.blueGrey[700]!;
-      case TypeInput.TARGETS_STEPs:
+      case TypeInput.TARGETS_STEPS:
+      case TypeInput.FOUNDED_TARGET:
         return Colors.deepPurple[700]!;
     }
   }
@@ -334,12 +336,10 @@ class _MyHomePageState extends State<MyHomePage> {
       barriers: barriers,
       targets: targets,
     ).findSteps(steps: steps);
-    print('Steps areas ${result.$1}');
-    print('Targets ${result.$2}');
+    print('Steps areas ${result}');
 
     setState(() {
-      stepsArea = List.of(result.$1);
-      foundedEnemies = List.of(result.$2);
+      stepsArea = List.of(result);
     });
   }
 
