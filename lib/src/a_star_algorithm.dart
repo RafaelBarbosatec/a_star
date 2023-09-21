@@ -21,8 +21,8 @@ class AStar {
   /// Perhaps thease are enemies
   final List<Point<int>> targets;
   final bool withDiagonal;
-  List<Tile> _doneList = [];
-  List<Tile> _waitList = [];
+  final List<Tile> _doneList = [];
+  final List<Tile> _waitList = [];
 
   late List<List<Tile>> grid;
 
@@ -32,7 +32,7 @@ class AStar {
     required this.start,
     required this.end,
     required this.barriers,
-     this.targets = const [],
+    this.targets = const [],
     this.landCosts = const [],
     this.withDiagonal = false,
   }) {
@@ -48,8 +48,8 @@ class AStar {
     this.targets = const [],
     this.landCosts = const [],
     this.withDiagonal = true,
-  })  : barriers = [] {
-    grid = createGridWithFree( freeSpaces);
+  }) : barriers = [] {
+    grid = createGridWithFree(freeSpaces);
   }
 
   /// Method that starts the search
@@ -79,7 +79,7 @@ class AStar {
     if (winner?.parent != null) {
       Tile tileAux = winner!.parent!;
       for (int i = 0; i < winner.g - 1; i++) {
-        if(tileAux.position == start) {
+        if (tileAux.position == start) {
           break;
         }
         path.add(tileAux.position);
@@ -96,14 +96,13 @@ class AStar {
     return path.reversed;
   }
 
-  
   /// Method recursive that execute the A* algorithm
   Tile? _getTileWinner(Tile current, Tile end) {
     if (end == current) return current;
     _waitList.remove(current);
-    current.neighbors.forEach((element) {
+    for (var element in current.neighbors) {
       _analiseDistance(element, end, parent: current);
-    });
+    }
     _doneList.add(current);
 
     _waitList.addAll(current.neighbors.where((element) {

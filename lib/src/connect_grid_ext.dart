@@ -8,7 +8,9 @@ extension ConnectGridExt on AStar {
   /// Adds neighbors to cells
   void addNeighbors(List<List<Tile>> grid) {
     for (var row in grid) {
-      for (Tile tile in row) chainNeigbors(tile, grid);
+      for (Tile tile in row) {
+        chainNeigbors(tile, grid);
+      }
     }
   }
 

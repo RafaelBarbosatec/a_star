@@ -4,15 +4,15 @@ import 'package:a_star_algorithm/a_star_algorithm.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(TurnAreaApp());
 }
 
-class MyApp extends StatelessWidget {
+class TurnAreaApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter Turn Area Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -27,6 +27,8 @@ enum TypeInput {
   BARRIERS,
   TARGETS,
   WATER,
+  STEPS,
+  TARGETS_STEPs,
 }
 
 class MyHomePage extends StatefulWidget {
@@ -36,7 +38,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   TypeInput _typeInput = TypeInput.START_POINT;
-
+  int steps = 5;
   bool _showDoneList = true;
   Point<int> start = Point<int>(0, 0);
   Point<int> end = Point<int>(0, 0);
@@ -44,6 +46,10 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Point<int>> barriers = [];
   List<CostPoint> lands = [];
   List<Point<int>> targets = [];
+
+  /// turn based area
+  List<Point<int>> stepsArea = [];
+  List<Point<int>> enemyMeelleArea = [];
   int rows = 20;
   int columns = 20;
 
@@ -64,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('A*'),
+        title: Text('A* tbs'),
       ),
       body: Column(
         mainAxisSize: MainAxisSize.min,
@@ -86,16 +92,39 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   child: Text('START'),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _typeInput = TypeInput.END_POINT;
-                    });
-                  },
-                  style: ButtonStyle(
-                    backgroundColor: _getColorSelected(TypeInput.END_POINT),
-                  ),
-                  child: Text('END'),
+                Column(
+                  children: [
+                    Text('steps $steps'.toUpperCase()),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.add),
+                          onPressed: () {
+                            setState(() {
+                              steps += 1;
+                            });
+                          },
+                          style: ButtonStyle(
+                            backgroundColor: _getColorSelected(TypeInput.WATER),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        IconButton(
+                          icon: Icon(Icons.remove),
+                          onPressed: () {
+                            if (steps > 0)
+                              setState(() {
+                                steps -= 1;
+                              });
+                          },
+                          style: ButtonStyle(
+                            backgroundColor: _getColorSelected(TypeInput.WATER),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -176,9 +205,12 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _buildItem(Tile e) {
     Color color = Colors.white;
     String text = '1';
-   if(lands.contains(e.position)){
+    if (lands.contains(e.position)) {
       color = Colors.cyan;
-      text =  lands.firstWhere((i) => i.x == e.position.x && i.y ==e.position.y).cost.toString();
+      text = lands
+          .firstWhere((i) => i.x == e.position.x && i.y == e.position.y)
+          .cost
+          .toString();
     }
     if (barriers.contains(e.position)) {
       color = Colors.red.withOpacity(.7);
@@ -190,12 +222,12 @@ class _MyHomePageState extends State<MyHomePage> {
     if (e.selected && _showDoneList) {
       color = Colors.green.withOpacity(.7);
     }
-    
+
     if (targets.contains(e.position)) {
       color = Colors.purple.withOpacity(.7);
       text = text + '\ntarget';
     }
-    
+
     if (e.position == start) {
       color = Colors.yellow.withOpacity(.7);
       text = text + '\nstart';
@@ -212,7 +244,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       height: 10,
       child: InkWell(
-        child: Text(text,style: TextStyle(fontSize: 9,color: Colors.black),),
+        child: Text(
+          text,
+          style: TextStyle(fontSize: 9, color: Colors.black),
+        ),
+        onLongPress: () {},
+        onDoubleTap: () {},
         onTap: () {
           if (_typeInput == TypeInput.START_POINT) {
             start = e.position;
@@ -267,12 +304,15 @@ class _MyHomePageState extends State<MyHomePage> {
         return Colors.purple;
       case TypeInput.WATER:
         return Colors.blue;
+      case TypeInput.STEPS:
+        return Colors.blueGrey[700]!;
+      case TypeInput.TARGETS_STEPs:
+        return Colors.deepPurple[700]!;
     }
   }
 
   void _start() {
     _cleanTiles();
-    List<Point<int>> done = [];
     final result = AStar(
       rows: rows,
       columns: columns,
@@ -281,44 +321,13 @@ class _MyHomePageState extends State<MyHomePage> {
       landCosts: lands,
       barriers: barriers,
       targets: targets,
-    ).
-        // .findStepsArea(
-        //     steps: 5,
-        //     doneList: (doneList) {
-        //       done = doneList;
-        //     });
-        findThePath(doneList: (doneList) {
-      done = doneList;
-    });
-// print('---steps');
-    print(result);
-    
-  //  for (int i = 0; i < result.length; i+=2) {
-  //    final current = result.elementAt( i );
-  //    if((i + 1) < result.length -1 ) return;
-  //    final next = result.elementAt(i + 1);
-     
-  //  } 
-
-    for (var element in result) {
-      done.remove(element);
-    }
-
-    done.remove(start);
-    done.remove(end);
+    ).findSteps(steps: steps);
+    print('Steps areas ${result.$1}');
+    print('Targets ${result.$2}');
 
     setState(() {
-      for (var element in tiles) {
-        element.selected = result.any((r) {
-          return r.x  == element.position.x && r.y == element.position.y;
-        });
-
-        if (_showDoneList) {
-          element.done = done.where((r) {
-            return r == element.position;
-          }).isNotEmpty;
-        }
-      }
+      stepsArea = List.of(result.$1);
+      enemyMeelleArea = List.of(result.$2);
     });
   }
 
