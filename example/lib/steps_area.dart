@@ -213,6 +213,7 @@ class _MyHomePageState extends State<MyHomePage> {
           .firstWhere((i) => i.x == e.position.x && i.y == e.position.y)
           .cost
           .toString();
+          icon = Icons.water;
     }
     if (barriers.contains(e.position)) {
       color = Colors.red;
