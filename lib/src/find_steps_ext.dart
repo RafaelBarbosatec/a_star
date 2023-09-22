@@ -20,7 +20,7 @@ extension FindStepsExt on AStar {
     if (currentArea.isEmpty) return [];
     for (var element in startTile.neighbors) {
       element.parent = startTile;
-      element.g = element.cost + startTile.cost;
+      element.g = element.weight + startTile.weight;
     }
     for (var i = 1; i < steps + 2 ; i++) {
       if (currentArea.isEmpty) continue;
@@ -31,7 +31,7 @@ extension FindStepsExt on AStar {
             if (totalArea.contains(n)) continue;
             if(n.parent == null){
               n.parent = currentTile;
-              n.g = n.cost + currentTile.g;
+              n.g = n.weight + currentTile.g;
             }
             waitArea.add(n);
           }

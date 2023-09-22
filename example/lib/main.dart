@@ -176,9 +176,12 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _buildItem(Tile e) {
     Color color = Colors.white;
     String text = '1';
-   if(lands.contains(e.position)){
+    if (lands.contains(e.position)) {
       color = Colors.cyan;
-      text =  lands.firstWhere((i) => i.x == e.position.x && i.y ==e.position.y).cost.toString();
+      text = lands
+          .firstWhere((i) => i.x == e.position.x && i.y == e.position.y)
+          .cost
+          .toString();
     }
     if (barriers.contains(e.position)) {
       color = Colors.red.withOpacity(.7);
@@ -190,12 +193,12 @@ class _MyHomePageState extends State<MyHomePage> {
     if (e.selected && _showDoneList) {
       color = Colors.green.withOpacity(.7);
     }
-    
+
     if (targets.contains(e.position)) {
       color = Colors.purple.withOpacity(.7);
       text = text + '\ntarget';
     }
-    
+
     if (e.position == start) {
       color = Colors.yellow.withOpacity(.7);
       text = text + '\nstart';
@@ -212,7 +215,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       height: 10,
       child: InkWell(
-        child: Text(text,style: TextStyle(fontSize: 9,color: Colors.black),),
+        child: Text(
+          text,
+          style: TextStyle(fontSize: 9, color: Colors.black),
+        ),
         onTap: () {
           if (_typeInput == TypeInput.START_POINT) {
             start = e.position;
@@ -278,9 +284,8 @@ class _MyHomePageState extends State<MyHomePage> {
       columns: columns,
       start: start,
       end: end,
-      landCosts: lands,
-      barriers: barriers,
-      targets: targets,
+      weighedTiles: lands,
+      barriers: [...barriers, ...targets],
     ).
         // .findStepsArea(
         //     steps: 5,
@@ -292,13 +297,13 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 // print('---steps');
     print(result);
-    
-  //  for (int i = 0; i < result.length; i+=2) {
-  //    final current = result.elementAt( i );
-  //    if((i + 1) < result.length -1 ) return;
-  //    final next = result.elementAt(i + 1);
-     
-  //  } 
+
+    //  for (int i = 0; i < result.length; i+=2) {
+    //    final current = result.elementAt( i );
+    //    if((i + 1) < result.length -1 ) return;
+    //    final next = result.elementAt(i + 1);
+
+    //  }
 
     for (var element in result) {
       done.remove(element);
@@ -310,7 +315,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       for (var element in tiles) {
         element.selected = result.any((r) {
-          return r.x  == element.position.x && r.y == element.position.y;
+          return r.x == element.position.x && r.y == element.position.y;
         });
 
         if (_showDoneList) {

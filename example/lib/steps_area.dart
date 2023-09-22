@@ -333,9 +333,9 @@ class _MyHomePageState extends State<MyHomePage> {
       columns: columns,
       start: start,
       end: end,
-      landCosts: lands,
-      barriers: barriers,
-      targets: targets,
+      weighedTiles: lands,
+      withDiagonal: false,
+      barriers: [...barriers, ...targets],
     ).findSteps(steps: steps);
     print('Steps areas ${result}');
 

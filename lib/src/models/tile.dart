@@ -9,7 +9,7 @@ class Tile {
   final List<Tile> neighbors;
   final List<Tile> connectors;
   final TileType type;
-  final int cost;
+  final int weight;
   /// distanse from current to start
   int g = 0;
   /// distanse from current to end
@@ -21,7 +21,7 @@ class Tile {
   bool get isTarget => type == TileType.target;
 
   Tile(this.position, this.neighbors, this.connectors,
-      {this.parent, this.type = TileType.free, this.cost = 1});
+      {this.parent, this.type = TileType.free, this.weight = 1});
 
   @override
   bool operator ==(covariant Tile other) {

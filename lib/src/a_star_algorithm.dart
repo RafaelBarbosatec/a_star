@@ -16,10 +16,8 @@ class AStar {
   final Point<int> start;
   final Point<int> end;
   final List<Point<int>> barriers;
-  final List<CostPoint> landCosts;
+  final List<CostPoint> weighedTiles;
 
-  /// Perhaps thease are enemies
-  final List<Point<int>> targets;
   final bool withDiagonal;
   final List<Tile> _doneList = [];
   final List<Tile> _waitList = [];
@@ -32,8 +30,7 @@ class AStar {
     required this.start,
     required this.end,
     required this.barriers,
-    this.targets = const [],
-    this.landCosts = const [],
+    this.weighedTiles = const [],
     this.withDiagonal = false,
   }) {
     grid = createGridWithBarriers();
@@ -45,8 +42,7 @@ class AStar {
     required this.start,
     required this.end,
     required List<Point<int>> freeSpaces,
-    this.targets = const [],
-    this.landCosts = const [],
+    this.weighedTiles = const [],
     this.withDiagonal = true,
   }) : barriers = [] {
     grid = createGridWithFree(freeSpaces);
@@ -56,7 +52,6 @@ class AStar {
   Iterable<Point<int>> findThePath({ValueChanged<List<Point<int>>>? doneList}) {
     _doneList.clear();
     _waitList.clear();
-    final isTarget = targets.contains(end);
 
     if (barriers.contains(end)) {
       return [];
@@ -66,16 +61,13 @@ class AStar {
 
     Tile endTile = grid[end.x][end.y];
     addNeighbors(grid);
-    if (isTarget) {
-      targetAsNeighbor(endTile, grid);
-    }
-    startTile.g = startTile.cost;
+    startTile.g = startTile.weight;
     Tile? winner = _getTileWinner(
       startTile,
       endTile,
     );
 
-    List<Point<int>> path = [if (!isTarget) end];
+    List<Point<int>> path = [end];
     if (winner?.parent != null) {
       Tile tileAux = winner!.parent!;
       for (int i = 0; i < winner.g - 1; i++) {
@@ -128,7 +120,7 @@ class AStar {
   void _analiseDistance(Tile current, Tile end, {required Tile parent}) {
     if (current.parent == null) {
       current.parent = parent;
-      current.g = parent.g + current.cost;
+      current.g = parent.g + current.weight;
       current.h = _distance(parent, end);
       // debugPrint('n--${current.position.toString()} ${current.g} ${current.h} ${current.f}');
     }
