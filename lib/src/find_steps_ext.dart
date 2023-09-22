@@ -17,7 +17,7 @@ extension FindStepsExt on AStar {
     final List<Tile> waitArea = [];
 
     final List<Tile> currentArea = [...startTile.neighbors];
-    if (currentArea.isEmpty) return [];
+    if (currentArea.isEmpty) return totalArea.toPoints();
     for (var element in startTile.neighbors) {
       element.parent = startTile;
       element.g = element.weight + startTile.weight;
