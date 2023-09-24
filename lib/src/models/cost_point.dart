@@ -1,7 +1,7 @@
 import 'dart:math';
 
- class CostPoint extends Point<int> {
-  CostPoint(super.x, super.y,{required this.cost});
-  final int cost;
+ class WeightPoint extends Point<int> {
+  WeightPoint(super.x, super.y,{required this.weight});
+  final int weight;
 
 }

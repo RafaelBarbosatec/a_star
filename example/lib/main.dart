@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:a_star_algorithm/a_star_algorithm.dart';
 import 'package:flutter/material.dart';
+import 'package:timing/timing.dart';
 
 void main() {
   runApp(MyApp());
@@ -23,7 +24,6 @@ class MyApp extends StatelessWidget {
 
 enum TypeInput {
   START_POINT,
-  END_POINT,
   BARRIERS,
   TARGETS,
   WATER,
@@ -37,12 +37,21 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   TypeInput _typeInput = TypeInput.START_POINT;
 
+  // benchmark timing
+  AsyncTimeTracker? timeTracker;
+  int benchmark = 0;
+
   bool _showDoneList = true;
   Point<int> start = Point<int>(0, 0);
-  Point<int> end = Point<int>(0, 0);
   List<Tile> tiles = [];
   List<Point<int>> barriers = [];
-  List<CostPoint> lands = [];
+  List<WeightPoint> weighed = [
+    WeightPoint(5, 5, weight: 5),
+    WeightPoint(6, 5, weight: 5),
+    WeightPoint(7, 5, weight: 5),
+    WeightPoint(7, 6, weight: 5),
+    WeightPoint(8, 5, weight: 5),
+  ];
   List<Point<int>> targets = [];
   int rows = 20;
   int columns = 20;
@@ -64,12 +73,22 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('A*'),
+        title: Text('A* double tap to find path'),
       ),
       body: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(
+            height: 40,
+            child: Row(
+              children: [
+                if (_showDoneList)
+                  Text(
+                      'done list ${tiles.where((i) => i.done).length} , path length ${tiles.where((i) => i.selected).length} ${_getBenchmark()}')
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(20.0),
             child: Row(
@@ -85,17 +104,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     backgroundColor: _getColorSelected(TypeInput.START_POINT),
                   ),
                   child: Text('START'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _typeInput = TypeInput.END_POINT;
-                    });
-                  },
-                  style: ButtonStyle(
-                    backgroundColor: _getColorSelected(TypeInput.END_POINT),
-                  ),
-                  child: Text('END'),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -165,22 +173,17 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _start,
-        tooltip: 'Find path',
-        child: Icon(Icons.map),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
   Widget _buildItem(Tile e) {
     Color color = Colors.white;
     String text = '1';
-    if (lands.contains(e.position)) {
+    if (weighed.contains(e.position)) {
       color = Colors.cyan;
-      text = lands
+      text = weighed
           .firstWhere((i) => i.x == e.position.x && i.y == e.position.y)
-          .cost
+          .weight
           .toString();
     }
     if (barriers.contains(e.position)) {
@@ -203,10 +206,6 @@ class _MyHomePageState extends State<MyHomePage> {
       color = Colors.yellow.withOpacity(.7);
       text = text + '\nstart';
     }
-    if (e.position == end) {
-      color = Colors.green.withOpacity(.7);
-      text = text + '\nend';
-    }
 
     return Ink(
       decoration: BoxDecoration(
@@ -219,13 +218,10 @@ class _MyHomePageState extends State<MyHomePage> {
           text,
           style: TextStyle(fontSize: 9, color: Colors.black),
         ),
+        onDoubleTap: () => _start(e.position),
         onTap: () {
           if (_typeInput == TypeInput.START_POINT) {
             start = e.position;
-          }
-
-          if (_typeInput == TypeInput.END_POINT) {
-            end = e.position;
           }
 
           if (_typeInput == TypeInput.BARRIERS) {
@@ -243,16 +239,23 @@ class _MyHomePageState extends State<MyHomePage> {
             }
           }
           if (_typeInput == TypeInput.WATER) {
-            if (lands.contains(e.position)) {
-              lands.remove(e.position);
+            if (weighed.contains(e.position)) {
+              weighed.remove(e.position);
             } else {
-              lands.add(CostPoint(e.position.x, e.position.y, cost: 7));
+              weighed.add(WeightPoint(e.position.x, e.position.y, weight: 5));
             }
           }
           setState(() {});
         },
       ),
     );
+  }
+
+  String _getBenchmark(){
+    if(timeTracker == null) return '';
+    if(!timeTracker!.isFinished) return '';
+    final duration = timeTracker!.duration;
+  return  'benchmark: inMicro: ${duration.inMicroseconds} inMilli: ${duration.inMilliseconds}';
   }
 
   MaterialStateProperty<Color> _getColorSelected(TypeInput input) {
@@ -265,8 +268,6 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (input) {
       case TypeInput.START_POINT:
         return Colors.yellow;
-      case TypeInput.END_POINT:
-        return Colors.green;
       case TypeInput.BARRIERS:
         return Colors.red;
       case TypeInput.TARGETS:
@@ -276,25 +277,40 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _start() {
+  void _start(Point<int> target) {
     _cleanTiles();
     List<Point<int>> done = [];
     final result = AStar(
       rows: rows,
       columns: columns,
       start: start,
-      end: end,
-      weighedTiles: lands,
+      end: target,
+      weighed: weighed,
+      withDiagonal: true,
       barriers: [...barriers, ...targets],
-    ).
-        // .findStepsArea(
-        //     steps: 5,
-        //     doneList: (doneList) {
-        //       done = doneList;
-        //     });
-        findThePath(doneList: (doneList) {
+    ).findThePath(doneList: (doneList) {
       done = doneList;
     });
+    timeTracker = AsyncTimeTracker()
+      ..track(() {
+        final result = AStar(
+          rows: rows,
+          columns: columns,
+          start: start,
+          end: target,
+          weighed: weighed,
+          barriers: [...barriers, ...targets],
+        ).
+            // .findStepsArea(
+            //     steps: 5,
+            //     doneList: (doneList) {
+            //       done = doneList;
+            //     });
+            findThePath(doneList: (doneList) {
+          done = doneList;
+        });
+      });
+
 // print('---steps');
     print(result);
 
@@ -310,7 +326,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     done.remove(start);
-    done.remove(end);
 
     setState(() {
       for (var element in tiles) {

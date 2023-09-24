@@ -1,7 +1,7 @@
 import 'dart:math';
 
 /// Class used to represent each cell
-enum TileType { free, ally, barrier, target }
+enum TileType { free,  barrier, target }
 
 class Tile {
   final Point<int> position;
@@ -11,14 +11,13 @@ class Tile {
   final TileType type;
   final int weight;
   /// distanse from current to start
-  int g = 0;
+  double g = 0;
   /// distanse from current to end
-  int h = 0;
-  /// total cost 
-  int get f => g + h;
+  double h = 0;
+  /// total distance 
+  double get f => g + h;
   bool get isBarrier => type == TileType.barrier;
   bool get isFree => type == TileType.free;
-  bool get isTarget => type == TileType.target;
 
   Tile(this.position, this.neighbors, this.connectors,
       {this.parent, this.type = TileType.free, this.weight = 1});
@@ -34,5 +33,8 @@ class Tile {
   int get hashCode {
     return position.hashCode ^ type.hashCode;
   }
+  
+  
+  
 }
 

@@ -3,18 +3,16 @@ import 'package:a_star_algorithm/a_star_algorithm.dart';
 import 'models/tile.dart';
 
 extension ConnectGridExt on AStar {
-
-
   /// Adds neighbors to cells
   void addNeighbors(List<List<Tile>> grid) {
     for (var row in grid) {
       for (Tile tile in row) {
-        chainNeigbors(tile, grid);
+        _chainNeigbors(tile, grid);
       }
     }
   }
 
-  void chainNeigbors(Tile tile, List<List<Tile>> grid) {
+  void _chainNeigbors(Tile tile, List<List<Tile>> grid) {
     int x = tile.position.x;
     int y = tile.position.y;
 

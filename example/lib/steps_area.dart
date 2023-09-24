@@ -45,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Point<int> end = Point<int>(0, 0);
   List<Tile> tiles = [];
   List<Point<int>> barriers = [];
-  List<CostPoint> lands = [];
+  List<WeightPoint> weighted = [];
   List<Point<int>> targets = [];
 
   /// turn based area
@@ -207,11 +207,11 @@ class _MyHomePageState extends State<MyHomePage> {
     Color color = Colors.white;
     String text = '1';
     IconData? icon;
-    if (lands.contains(e.position)) {
+    if (weighted.contains(e.position)) {
       color = Colors.cyan.withOpacity(0.5);
-      text = lands
+      text = weighted
           .firstWhere((i) => i.x == e.position.x && i.y == e.position.y)
-          .cost
+          .weight
           .toString();
           icon = Icons.water;
     }
@@ -288,10 +288,10 @@ class _MyHomePageState extends State<MyHomePage> {
             }
           }
           if (_typeInput == TypeInput.WATER) {
-            if (lands.contains(e.position)) {
-              lands.remove(e.position);
+            if (weighted.contains(e.position)) {
+              weighted.remove(e.position);
             } else {
-              lands.add(CostPoint(e.position.x, e.position.y, cost: 7));
+              weighted.add(WeightPoint(e.position.x, e.position.y, weight: 7));
             }
           }
           setState(() {});
@@ -333,7 +333,7 @@ class _MyHomePageState extends State<MyHomePage> {
       columns: columns,
       start: start,
       end: end,
-      weighedTiles: lands,
+      weighed: weighted,
       withDiagonal: false,
       barriers: [...barriers, ...targets],
     ).findSteps(steps: steps);

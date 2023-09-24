@@ -12,7 +12,7 @@ extension GreateGridWithBarrierExt on AStar {
       List.generate(rows, (y) {
         final point = Point<int>(x, y);
         final isBarrier = barriers.any((b) => b == point);
-        final costIndex = weighedTiles.indexWhere((c) => c == point);
+        final costIndex = weighed.indexWhere((c) => c == point);
         final type = isBarrier
                 ? TileType.barrier
                 : TileType.free;
@@ -22,7 +22,7 @@ extension GreateGridWithBarrierExt on AStar {
             [],
             [],
             // if have landCost use it else default 1
-            weight: costIndex != -1 ? weighedTiles[costIndex].cost : 1,
+            weight: costIndex != -1 ? weighed[costIndex].weight : 1,
             type: type,
           ),
         );

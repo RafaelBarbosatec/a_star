@@ -20,7 +20,7 @@ extension FindStepsExt on AStar {
     if (currentArea.isEmpty) return totalArea.toPoints();
     for (var element in startTile.neighbors) {
       element.parent = startTile;
-      element.g = element.weight + startTile.weight;
+      element.g = element.weight + startTile.weight.toDouble();
     }
     for (var i = 1; i < steps + 2 ; i++) {
       if (currentArea.isEmpty) continue;

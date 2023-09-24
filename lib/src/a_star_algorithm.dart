@@ -1,9 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math';
 
-import 'package:a_star_algorithm/a_star_algorithm.dart';
+// import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+
+import 'package:a_star_algorithm/a_star_algorithm.dart';
 
 import 'models/tile.dart';
 
@@ -16,7 +18,7 @@ class AStar {
   final Point<int> start;
   final Point<int> end;
   final List<Point<int>> barriers;
-  final List<CostPoint> weighedTiles;
+  final List<WeightPoint> weighed;
 
   final bool withDiagonal;
   final List<Tile> _doneList = [];
@@ -30,7 +32,7 @@ class AStar {
     required this.start,
     required this.end,
     required this.barriers,
-    this.weighedTiles = const [],
+    this.weighed = const [],
     this.withDiagonal = false,
   }) {
     grid = createGridWithBarriers();
@@ -42,7 +44,7 @@ class AStar {
     required this.start,
     required this.end,
     required List<Point<int>> freeSpaces,
-    this.weighedTiles = const [],
+    this.weighed = const [],
     this.withDiagonal = true,
   }) : barriers = [] {
     grid = createGridWithFree(freeSpaces);
@@ -61,7 +63,9 @@ class AStar {
 
     Tile endTile = grid[end.x][end.y];
     addNeighbors(grid);
-    startTile.g = startTile.weight;
+    startTile.g = startTile.weight.toDouble();
+
+    // ---- old ----
     Tile? winner = _getTileWinner(
       startTile,
       endTile,
@@ -92,17 +96,19 @@ class AStar {
   Tile? _getTileWinner(Tile current, Tile end) {
     if (end == current) return current;
     _waitList.remove(current);
-    for (var element in current.neighbors) {
-      _analiseDistance(element, end, parent: current);
+    for (final element in current.neighbors) {
+      if (element.parent == null) {
+        _analiseDistance(element, end, parent: current);
+      }
     }
     _doneList.add(current);
 
-    _waitList.addAll(current.neighbors.where((element) {
-      return !_doneList.contains(element);
-    }));
-
+    for (var n in current.neighbors) {
+      if (!_doneList.contains(n)) {
+        _waitList.add(n);
+      }
+    }
     _waitList.sort((a, b) => a.f.compareTo(b.f));
-
 
     for (final element in _waitList) {
       if (!_doneList.contains(element)) {
@@ -118,19 +124,19 @@ class AStar {
 
   /// Calculates the distance g and h
   void _analiseDistance(Tile current, Tile end, {required Tile parent}) {
-    if (current.parent == null) {
-      current.parent = parent;
-      current.g = parent.g + current.weight;
-      current.h = _distance(parent, end);
-      // debugPrint('n--${current.position.toString()} ${current.g} ${current.h} ${current.f}');
-    }
+    current.parent = parent;
+    current.g = parent.g + current.weight;
+    current.h = _distance(parent, end);
   }
 
   /// Calculates the distance between two tiles.
-  int _distance(Tile tile1, Tile tile2) {
+  double _distance(Tile tile1, Tile tile2) {
+    if (withDiagonal) {
+      return tile1.position.distanceTo(tile2.position).abs();
+    }
     int distX = (tile1.position.x - tile2.position.x).abs();
     int distY = (tile1.position.y - tile2.position.y).abs();
-    return distX + distY;
+    return (distX * distY).toDouble();
   }
 
   /// Resume path
