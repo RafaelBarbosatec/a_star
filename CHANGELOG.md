@@ -1,8 +1,9 @@
 
 ## [0.4.0]
-* Improve perfomance of search
+* Improve perfomance most faster for most usage cases
 * added `Astar.findSteps`
 * added example for find steps
+* added benchmark in example
 * improve examples
 
 ## [0.3.0]
