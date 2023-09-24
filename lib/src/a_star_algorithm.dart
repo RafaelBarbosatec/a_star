@@ -126,14 +126,14 @@ class AStar {
   void _analiseDistance(Tile current, Tile end, {required Tile parent}) {
     current.parent = parent;
     current.g = parent.g + current.weight;
-    current.h = _distance(current.position, parent.position, end.position);
+    current.h = _distance(current.position, end.position);
   }
 
   /// Calculates the distance between two tiles.
-  int _distance(Point<int> current, Point<int> parent, Point<int> target) {
+  int _distance(Point<int> current, Point<int> target) {
     int toX = (current.x - target.x);
     int toY = (current.y - target.y);
-    return toY.abs() * toX.abs();
+    return (toY * toX).abs();
   }
 
   /// Resume path
