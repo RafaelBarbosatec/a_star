@@ -1,7 +1,5 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
-
 /// Class used to represent each cell
 enum TileType { free,  barrier, target }
 

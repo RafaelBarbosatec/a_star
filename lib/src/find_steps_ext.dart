@@ -6,9 +6,6 @@ import 'package:a_star_algorithm/src/helpers/list_tile_ext.dart';
 import 'models/tile.dart';
 
 extension FindStepsExt on AStar {
-  /// s1 path area
-  ///
-  /// s2 founded enemies
   List<Point<int>> findSteps({required int steps}) {
     addNeighbors(grid);
 

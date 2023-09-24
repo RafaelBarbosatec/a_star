@@ -1,3 +1,10 @@
+
+## [0.4.0]
+* Improve perfomance of search
+* added `Astar.findSteps`
+* added example for find steps
+* improve examples
+
 ## [0.3.0]
 * Adds `AStar.byFreeSpaces`.
 
