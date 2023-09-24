@@ -286,7 +286,7 @@ class _MyHomePageState extends State<MyHomePage> {
       start: start,
       end: target,
       weighed: weighed,
-      withDiagonal: false,
+      withDiagonal: true,
       barriers: [...barriers, ...targets],
     ).findThePath(doneList: (doneList) {
       done = doneList;
@@ -301,25 +301,13 @@ class _MyHomePageState extends State<MyHomePage> {
           weighed: weighed,
           barriers: [...barriers, ...targets],
         ).
-            // .findStepsArea(
-            //     steps: 5,
-            //     doneList: (doneList) {
-            //       done = doneList;
-            //     });
             findThePath(doneList: (doneList) {
           done = doneList;
         });
       });
 
-// print('---steps');
     print(result);
 
-    //  for (int i = 0; i < result.length; i+=2) {
-    //    final current = result.elementAt( i );
-    //    if((i + 1) < result.length -1 ) return;
-    //    final next = result.elementAt(i + 1);
-
-    //  }
 
     for (var element in result) {
       done.remove(element);

@@ -131,12 +131,9 @@ class AStar {
 
   /// Calculates the distance between two tiles.
   int _distance(Point<int> current, Point<int> parent, Point<int> target) {
-    int distX = (current.x - target.x).abs();
-    int distY = (current.y - target.y).abs();
-    if (withDiagonal) {
-      return distX + distY;
-    }
-    return distX * distY;
+    int toX = (current.x - target.x);
+    int toY = (current.y - target.y);
+    return toY.abs() * toX.abs();
   }
 
   /// Resume path
