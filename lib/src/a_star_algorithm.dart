@@ -13,8 +13,6 @@ import 'models/tile.dart';
 class AStar {
   final int rows;
   final int columns;
-  // ligher than Offset
-  // Point<int> not need to translate toDouble and back
   final Point<int> start;
   final Point<int> end;
   final List<Point<int>> barriers;
@@ -65,7 +63,6 @@ class AStar {
     addNeighbors(grid);
     startTile.g = 0;
 
-    // ---- old ----
     Tile? winner = _getTileWinner(
       startTile,
       endTile,

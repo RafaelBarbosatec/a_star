@@ -9,7 +9,6 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -42,6 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int benchmark = 0;
 
   bool _showDoneList = true;
+  bool _withDiagonals = true;
   Point<int> start = Point<int>(0, 0);
   List<Tile> tiles = [];
   List<Point<int>> barriers = [];
@@ -89,6 +89,20 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
           ),
+          Row(
+            children: [
+              Text('with diagonals'),
+              Switch(
+                value: _withDiagonals,
+                onChanged: (value) {
+                  setState(() {
+                    _withDiagonals = value;
+                  });
+                },
+              ),
+            ],
+          ),
+
           Padding(
             padding: const EdgeInsets.all(20.0),
             child: Row(
@@ -251,11 +265,11 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  String _getBenchmark(){
-    if(timeTracker == null) return '';
-    if(!timeTracker!.isFinished) return '';
+  String _getBenchmark() {
+    if (timeTracker == null) return '';
+    if (!timeTracker!.isFinished) return '';
     final duration = timeTracker!.duration;
-  return  'benchmark: inMicro: ${duration.inMicroseconds} inMilli: ${duration.inMilliseconds}';
+    return 'benchmark: inMicro: ${duration.inMicroseconds} inMilli: ${duration.inMilliseconds}';
   }
 
   MaterialStateProperty<Color> _getColorSelected(TypeInput input) {
@@ -286,7 +300,7 @@ class _MyHomePageState extends State<MyHomePage> {
       start: start,
       end: target,
       weighed: weighed,
-      withDiagonal: false,
+      withDiagonal: _withDiagonals,
       barriers: [...barriers, ...targets],
     ).findThePath(doneList: (doneList) {
       done = doneList;
@@ -300,14 +314,12 @@ class _MyHomePageState extends State<MyHomePage> {
           end: target,
           weighed: weighed,
           barriers: [...barriers, ...targets],
-        ).
-            findThePath(doneList: (doneList) {
+        ).findThePath(doneList: (doneList) {
           done = doneList;
         });
       });
 
     print(result);
-
 
     for (var element in result) {
       done.remove(element);
