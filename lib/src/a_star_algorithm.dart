@@ -63,7 +63,7 @@ class AStar {
 
     Tile endTile = grid[end.x][end.y];
     addNeighbors(grid);
-    startTile.g = startTile.weight.toDouble();
+    startTile.g = startTile.weight;
 
     // ---- old ----
     Tile? winner = _getTileWinner(
@@ -125,18 +125,18 @@ class AStar {
   /// Calculates the distance g and h
   void _analiseDistance(Tile current, Tile end, {required Tile parent}) {
     current.parent = parent;
-    current.g = parent.g + current.weight;
-    current.h = _distance(parent, end);
+    current.g = parent.g  + current.weight;
+    current.h = _distance(current, end);
   }
 
   /// Calculates the distance between two tiles.
-  double _distance(Tile tile1, Tile tile2) {
-    if (withDiagonal) {
-      return tile1.position.distanceTo(tile2.position).abs();
-    }
+  int _distance(Tile tile1, Tile tile2) {
     int distX = (tile1.position.x - tile2.position.x).abs();
     int distY = (tile1.position.y - tile2.position.y).abs();
-    return (distX * distY).toDouble();
+    if (withDiagonal) {
+      return distX + distY;
+    }
+    return distX * distY;
   }
 
   /// Resume path

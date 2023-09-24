@@ -22,9 +22,7 @@ extension ConnectGridExt on AStar {
       if (t.isFree) {
         tile.neighbors.add(t);
       }
-      if (!t.isBarrier) {
-        tile.connectors.add(t);
-      }
+      
     }
 
     /// adds in bottom
@@ -33,9 +31,7 @@ extension ConnectGridExt on AStar {
       if (t.isFree) {
         tile.neighbors.add(t);
       }
-      if (!t.isBarrier) {
-        tile.connectors.add(t);
-      }
+      
     }
 
     /// adds in left
@@ -44,9 +40,7 @@ extension ConnectGridExt on AStar {
       if (t.isFree) {
         tile.neighbors.add(t);
       }
-      if (!t.isBarrier) {
-        tile.connectors.add(t);
-      }
+      
     }
 
     /// adds in right
@@ -55,9 +49,7 @@ extension ConnectGridExt on AStar {
       if (t.isFree) {
         tile.neighbors.add(t);
       }
-      if (!t.isBarrier) {
-        tile.connectors.add(t);
-      }
+      
     }
 
     if (withDiagonal) {
@@ -69,9 +61,7 @@ extension ConnectGridExt on AStar {
         if (t.isFree && left.isFree && top.isFree) {
           tile.neighbors.add(t);
         }
-        if (!(t.isBarrier && left.isBarrier && top.isBarrier)) {
-          tile.connectors.add(t);
-        }
+        
       }
 
       /// adds in top-right
@@ -82,9 +72,7 @@ extension ConnectGridExt on AStar {
         if (t.isFree && top.isFree && right.isFree) {
           tile.neighbors.add(t);
         }
-        if (!( t.isBarrier && top.isBarrier && right.isBarrier )) {
-          tile.connectors.add(t);
-        }
+        
       }
 
       /// adds in bottom-left
@@ -95,9 +83,7 @@ extension ConnectGridExt on AStar {
         if (t.isFree && bottom.isFree && left.isFree) {
           tile.neighbors.add(t);
         }
-        if (!(t.isBarrier && bottom.isBarrier && left.isBarrier)) {
-          tile.connectors.add(t);
-        }
+        
       }
 
       /// adds in bottom-right
@@ -108,9 +94,7 @@ extension ConnectGridExt on AStar {
         if (t.isFree && bottom.isFree && right.isFree) {
           tile.neighbors.add(t);
         }
-        if (!(t.isBarrier && bottom.isBarrier && right.isBarrier)) {
-          tile.connectors.add(t);
-        }
+        
       }
     }
   }

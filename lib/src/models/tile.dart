@@ -7,19 +7,18 @@ class Tile {
   final Point<int> position;
   Tile? parent;
   final List<Tile> neighbors;
-  final List<Tile> connectors;
   final TileType type;
   final int weight;
   /// distanse from current to start
-  double g = 0;
+  int g = 0;
   /// distanse from current to end
-  double h = 0;
+  int h = 0;
   /// total distance 
-  double get f => g + h;
+  int get f => g + h;
   bool get isBarrier => type == TileType.barrier;
   bool get isFree => type == TileType.free;
 
-  Tile(this.position, this.neighbors, this.connectors,
+  Tile(this.position, this.neighbors,
       {this.parent, this.type = TileType.free, this.weight = 1});
 
   @override

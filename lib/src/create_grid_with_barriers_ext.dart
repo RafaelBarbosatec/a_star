@@ -20,7 +20,6 @@ extension GreateGridWithBarrierExt on AStar {
           Tile(
             point,
             [],
-            [],
             // if have landCost use it else default 1
             weight: costIndex != -1 ? weighed[costIndex].weight : 1,
             type: type,
