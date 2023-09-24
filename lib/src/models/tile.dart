@@ -14,9 +14,9 @@ class Tile {
   /// distanse from current to start
   int g = 0;
   /// distanse from current to end
-  int h = 0;
+  double h = 0;
   /// total distance 
-  int get f => g + h;
+  double get f => g + h;
   bool get isBarrier => type == TileType.barrier;
   bool get isFree => type == TileType.free;
 

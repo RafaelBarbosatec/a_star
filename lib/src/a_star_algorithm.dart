@@ -63,7 +63,7 @@ class AStar {
 
     Tile endTile = grid[end.x][end.y];
     addNeighbors(grid);
-    startTile.g = startTile.weight;
+    startTile.g = 0;
 
     // ---- old ----
     Tile? winner = _getTileWinner(
@@ -94,20 +94,17 @@ class AStar {
 
   /// Method recursive that execute the A* algorithm
   Tile? _getTileWinner(Tile current, Tile end) {
-    if (end == current) return current;
     _waitList.remove(current);
-    for (final element in current.neighbors) {
-      if (element.parent == null) {
-        _analiseDistance(element, end, parent: current);
+    if (end == current) return current;
+    for (final n in current.neighbors) {
+      if (n.parent == null) {
+        _analiseDistance(n, end, parent: current);
       }
-    }
-    _doneList.add(current);
-
-    for (var n in current.neighbors) {
-      if (!_doneList.contains(n)) {
+    if (!_doneList.contains(n)) {
         _waitList.add(n);
       }
     }
+    _doneList.add(current);
     _waitList.sort((a, b) => a.f.compareTo(b.f));
 
     for (final element in _waitList) {
@@ -125,15 +122,15 @@ class AStar {
   /// Calculates the distance g and h
   void _analiseDistance(Tile current, Tile end, {required Tile parent}) {
     current.parent = parent;
-    current.g = parent.g + ( current.weight * 2);
+    current.g = parent.g +  current.weight;
     current.h = _distance(current.position, end.position);
   }
 
   /// Calculates the distance between two tiles.
-  int _distance(Point<int> current, Point<int> target) {
-    int toX = (current.x - target.x).abs();
-    int toY = (current.y - target.y).abs();
-    return (toY + 1) * (toX + 1);
+  double _distance(Point<int> current, Point<int> target) {
+    int toX = current.x - target.x;
+    int toY = current.y - target.y;
+    return  Point(toX,toY).magnitude * 2;
   }
 
   /// Resume path
