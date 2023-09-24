@@ -10,19 +10,18 @@ class Tile {
   Tile? parent;
   final List<Tile> neighbors;
   final TileType type;
-  final int _weight;
+  final int weight;
   /// distanse from current to start
   int g = 0;
   /// distanse from current to end
   int h = 0;
   /// total distance 
   int get f => g + h;
-  int get weight => _weight + _weight;
   bool get isBarrier => type == TileType.barrier;
   bool get isFree => type == TileType.free;
 
   Tile(this.position, this.neighbors,
-      {this.parent, this.type = TileType.free, int weight = 1}): _weight = weight;
+      {this.parent, this.type = TileType.free, this.weight = 1});
 
   @override
   bool operator ==(covariant Tile other) {
