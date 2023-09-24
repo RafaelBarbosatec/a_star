@@ -286,7 +286,7 @@ class _MyHomePageState extends State<MyHomePage> {
       start: start,
       end: target,
       weighed: weighed,
-      withDiagonal: true,
+      withDiagonal: false,
       barriers: [...barriers, ...targets],
     ).findThePath(doneList: (doneList) {
       done = doneList;

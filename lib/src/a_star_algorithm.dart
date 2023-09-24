@@ -125,14 +125,14 @@ class AStar {
   /// Calculates the distance g and h
   void _analiseDistance(Tile current, Tile end, {required Tile parent}) {
     current.parent = parent;
-    current.g = parent.g  + current.weight;
-    current.h = _distance(current, end);
+    current.g = parent.g + current.weight;
+    current.h = _distance(current.position, parent.position, end.position);
   }
 
   /// Calculates the distance between two tiles.
-  int _distance(Tile tile1, Tile tile2) {
-    int distX = (tile1.position.x - tile2.position.x).abs();
-    int distY = (tile1.position.y - tile2.position.y).abs();
+  int _distance(Point<int> current, Point<int> parent, Point<int> target) {
+    int distX = (current.x - target.x).abs();
+    int distY = (current.y - target.y).abs();
     if (withDiagonal) {
       return distX + distY;
     }
