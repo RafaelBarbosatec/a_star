@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
+
 /// Class used to represent each cell
 enum TileType { free,  barrier, target }
 
@@ -8,18 +10,19 @@ class Tile {
   Tile? parent;
   final List<Tile> neighbors;
   final TileType type;
-  final int weight;
+  final int _weight;
   /// distanse from current to start
   int g = 0;
   /// distanse from current to end
   int h = 0;
   /// total distance 
   int get f => g + h;
+  int get weight => _weight + _weight;
   bool get isBarrier => type == TileType.barrier;
   bool get isFree => type == TileType.free;
 
   Tile(this.position, this.neighbors,
-      {this.parent, this.type = TileType.free, this.weight = 1});
+      {this.parent, this.type = TileType.free, int weight = 1}): _weight = weight;
 
   @override
   bool operator ==(covariant Tile other) {
