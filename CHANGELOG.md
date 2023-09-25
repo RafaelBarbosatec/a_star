@@ -6,6 +6,7 @@
 * added example for find steps
 * added benchmark in example
 * improve examples
+* min sdk: 2.18.0
 
 ## [0.3.0]
 * Adds `AStar.byFreeSpaces`.
