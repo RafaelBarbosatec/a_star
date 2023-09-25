@@ -16,7 +16,7 @@ class AStar {
   final Point<int> start;
   final Point<int> end;
   final List<Point<int>> barriers;
-  final List<WeightPoint> weighed;
+  final List<WeightedPoint> weighed;
 
   final bool withDiagonal;
   final List<Tile> _doneList = [];

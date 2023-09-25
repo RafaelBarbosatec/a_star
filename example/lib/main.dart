@@ -45,12 +45,12 @@ class _MyHomePageState extends State<MyHomePage> {
   Point<int> start = Point<int>(0, 0);
   List<Tile> tiles = [];
   List<Point<int>> barriers = [];
-  List<WeightPoint> weighed = [
-    WeightPoint(5, 5, weight: 5),
-    WeightPoint(6, 5, weight: 5),
-    WeightPoint(7, 5, weight: 5),
-    WeightPoint(7, 6, weight: 5),
-    WeightPoint(8, 5, weight: 5),
+  List<WeightedPoint> weighed = [
+    WeightedPoint(5, 5, weight: 5),
+    WeightedPoint(6, 5, weight: 5),
+    WeightedPoint(7, 5, weight: 5),
+    WeightedPoint(7, 6, weight: 5),
+    WeightedPoint(8, 5, weight: 5),
   ];
   List<Point<int>> targets = [];
   int rows = 20;
@@ -85,7 +85,8 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 if (_showDoneList)
                   Text(
-                      'done list ${tiles.where((i) => i.done).length} , path length ${tiles.where((i) => i.selected).length} ${_getBenchmark()}')
+                    'done list ${tiles.where((i) => i.done).length},\npath length ${tiles.where((i) => i.selected).length} ${_getBenchmark()}',
+                  )
               ],
             ),
           ),
@@ -102,7 +103,6 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ],
           ),
-
           Padding(
             padding: const EdgeInsets.all(20.0),
             child: Row(
@@ -256,7 +256,7 @@ class _MyHomePageState extends State<MyHomePage> {
             if (weighed.contains(e.position)) {
               weighed.remove(e.position);
             } else {
-              weighed.add(WeightPoint(e.position.x, e.position.y, weight: 5));
+              weighed.add(WeightedPoint(e.position.x, e.position.y, weight: 5));
             }
           }
           setState(() {});
@@ -294,32 +294,22 @@ class _MyHomePageState extends State<MyHomePage> {
   void _start(Point<int> target) {
     _cleanTiles();
     List<Point<int>> done = [];
-    final result = AStar(
-      rows: rows,
-      columns: columns,
-      start: start,
-      end: target,
-      weighed: weighed,
-      withDiagonal: _withDiagonals,
-      barriers: [...barriers, ...targets],
-    ).findThePath(doneList: (doneList) {
-      done = doneList;
-    });
+    late Iterable<Point<int>> result;
+
     timeTracker = AsyncTimeTracker()
       ..track(() {
-        final result = AStar(
+        result = AStar(
           rows: rows,
           columns: columns,
           start: start,
           end: target,
           weighed: weighed,
+          withDiagonal: _withDiagonals,
           barriers: [...barriers, ...targets],
         ).findThePath(doneList: (doneList) {
           done = doneList;
         });
       });
-
-    print(result);
 
     for (var element in result) {
       done.remove(element);

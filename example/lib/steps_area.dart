@@ -44,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Point<int> end = Point<int>(0, 0);
   List<Tile> tiles = [];
   List<Point<int>> barriers = [];
-  List<WeightPoint> weighted = [];
+  List<WeightedPoint> weighted = [];
   List<Point<int>> targets = [];
 
   /// turn based area
@@ -290,7 +290,7 @@ class _MyHomePageState extends State<MyHomePage> {
             if (weighted.contains(e.position)) {
               weighted.remove(e.position);
             } else {
-              weighted.add(WeightPoint(e.position.x, e.position.y, weight: 7));
+              weighted.add(WeightedPoint(e.position.x, e.position.y, weight: 7));
             }
           }
           setState(() {});
