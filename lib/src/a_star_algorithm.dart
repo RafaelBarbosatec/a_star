@@ -16,7 +16,7 @@ class AStar {
   final Point<int> start;
   final Point<int> end;
   final List<Point<int>> barriers;
-  final List<WeightedPoint> weighed;
+  final List<WeightedPoint> weighted;
 
   final bool withDiagonal;
   final List<Tile> _doneList = [];
@@ -30,7 +30,7 @@ class AStar {
     required this.start,
     required this.end,
     required this.barriers,
-    this.weighed = const [],
+    this.weighted = const [],
     this.withDiagonal = false,
   }) {
     grid = createGridWithBarriers();
@@ -42,7 +42,7 @@ class AStar {
     required this.start,
     required this.end,
     required List<Point<int>> freeSpaces,
-    this.weighed = const [],
+    this.weighted = const [],
     this.withDiagonal = true,
   }) : barriers = [] {
     grid = createGridWithFree(freeSpaces);

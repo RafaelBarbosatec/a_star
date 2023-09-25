@@ -13,7 +13,7 @@ extension GreateGridWithFreeExt on AStar {
       List<Tile> rowList = [];
       List.generate(rows, (y) {
         final point = Point<int>(x, y);
-        final costIndex = weighed.indexWhere((c) => c == point);
+        final costIndex = weighted.indexWhere((c) => c == point);
         // any more faster then where
         bool isFreeSpace = freeSpaces.any((element) {
           return element == point;
@@ -27,7 +27,7 @@ extension GreateGridWithFreeExt on AStar {
           Tile(
             point,
             [],
-            weight: costIndex != -1 ? weighed[costIndex].weight : 1,
+            weight: costIndex != -1 ? weighted[costIndex].weight : 1,
             type: type,
           ),
         );

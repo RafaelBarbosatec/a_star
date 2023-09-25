@@ -45,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Point<int> start = Point<int>(0, 0);
   List<Tile> tiles = [];
   List<Point<int>> barriers = [];
-  List<WeightedPoint> weighed = [
+  List<WeightedPoint> weighted = [
     WeightedPoint(5, 5, weight: 5),
     WeightedPoint(6, 5, weight: 5),
     WeightedPoint(7, 5, weight: 5),
@@ -193,9 +193,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _buildItem(Tile e) {
     Color color = Colors.white;
     String text = '1';
-    if (weighed.contains(e.position)) {
+    if (weighted.contains(e.position)) {
       color = Colors.cyan;
-      text = weighed
+      text = weighted
           .firstWhere((i) => i.x == e.position.x && i.y == e.position.y)
           .weight
           .toString();
@@ -253,10 +253,10 @@ class _MyHomePageState extends State<MyHomePage> {
             }
           }
           if (_typeInput == TypeInput.WATER) {
-            if (weighed.contains(e.position)) {
-              weighed.remove(e.position);
+            if (weighted.contains(e.position)) {
+              weighted.remove(e.position);
             } else {
-              weighed.add(WeightedPoint(e.position.x, e.position.y, weight: 5));
+              weighted.add(WeightedPoint(e.position.x, e.position.y, weight: 5));
             }
           }
           setState(() {});
@@ -303,7 +303,7 @@ class _MyHomePageState extends State<MyHomePage> {
           columns: columns,
           start: start,
           end: target,
-          weighed: weighed,
+          weighted: weighted,
           withDiagonal: _withDiagonals,
           barriers: [...barriers, ...targets],
         ).findThePath(doneList: (doneList) {
