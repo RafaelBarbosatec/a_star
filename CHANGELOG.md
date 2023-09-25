@@ -1,5 +1,6 @@
 
 ## [0.4.0]
+* new classes Point, WeighedPoint
 * Improved perfomance in most usage cases
 * added `Astar.findSteps`
 * added example for find steps
