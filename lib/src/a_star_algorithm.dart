@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math';
 
 // import 'package:collection/collection.dart';
@@ -133,7 +132,7 @@ class AStar {
   /// Resume path
   /// Example:
   /// [(1,2),(1,3),(1,4),(1,5)] = [(1,2),(1,5)]
-  static List<Point<int>> _resumePath(Iterable<Point<int>> path) {
+  static List<Point<int>> resumePath(Iterable<Point<int>> path) {
     List<Point<int>> newPath =
         _resumeDirection(path, TypeResumeDirection.axisX);
     newPath = _resumeDirection(newPath, TypeResumeDirection.axisY);
