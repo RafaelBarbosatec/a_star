@@ -4,7 +4,7 @@ import 'package:a_star_algorithm/a_star_algorithm.dart';
 import 'package:a_star_algorithm/src/models/tile.dart';
 
 extension GreateGridWithBarrierExt on AStar {
- /// Method that create the grid using barriers
+  /// Method that create the grid using barriers
   List<List<Tile>> createGridWithBarriers() {
     List<List<Tile>> newGrid = [];
     List.generate(columns, (x) {
@@ -13,9 +13,7 @@ extension GreateGridWithBarrierExt on AStar {
         final point = Point<int>(x, y);
         final isBarrier = barriers.any((b) => b == point);
         final costIndex = weighted.indexWhere((c) => c == point);
-        final type = isBarrier
-                ? TileType.barrier
-                : TileType.free;
+        final type = isBarrier ? TileType.barrier : TileType.free;
         rowList.add(
           Tile(
             point,
@@ -30,4 +28,3 @@ extension GreateGridWithBarrierExt on AStar {
     return newGrid;
   }
 }
-

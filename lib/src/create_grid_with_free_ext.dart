@@ -18,10 +18,7 @@ extension GreateGridWithFreeExt on AStar {
         bool isFreeSpace = freeSpaces.any((element) {
           return element == point;
         });
-        final type = 
-             isFreeSpace
-                ? TileType.free
-                : TileType.barrier;
+        final type = isFreeSpace ? TileType.free : TileType.barrier;
 
         rowList.add(
           Tile(

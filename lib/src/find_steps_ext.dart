@@ -19,14 +19,14 @@ extension FindStepsExt on AStar {
       element.parent = startTile;
       element.g = element.weight + startTile.weight;
     }
-    for (var i = 1; i < steps + 2 ; i++) {
+    for (var i = 1; i < steps + 2; i++) {
       if (currentArea.isEmpty) continue;
       for (var currentTile in currentArea) {
         if (currentTile.g <= i) {
           totalArea.add(currentTile);
           for (var n in currentTile.neighbors) {
             if (totalArea.contains(n)) continue;
-            if(n.parent == null){
+            if (n.parent == null) {
               n.parent = currentTile;
               n.g = n.weight + currentTile.g;
             }

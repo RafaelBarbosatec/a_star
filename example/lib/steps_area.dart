@@ -212,7 +212,7 @@ class _MyHomePageState extends State<MyHomePage> {
           .firstWhere((i) => i.x == e.position.x && i.y == e.position.y)
           .weight
           .toString();
-          icon = Icons.water;
+      icon = Icons.water;
     }
     if (barriers.contains(e.position)) {
       color = Colors.red;
@@ -238,10 +238,10 @@ class _MyHomePageState extends State<MyHomePage> {
       color = Colors.green;
       icon = Icons.flag;
     }
-    if(stepsArea.contains(e.position)){
+    if (stepsArea.contains(e.position)) {
       color = Colors.green;
     }
-    if(targets.contains(e.position)){
+    if (targets.contains(e.position)) {
       color = Colors.purple;
     }
 
@@ -254,7 +254,7 @@ class _MyHomePageState extends State<MyHomePage> {
       child: InkWell(
         child: Stack(
           children: [
-            if(icon !=null) Center(child: Icon(icon,color: color)),
+            if (icon != null) Center(child: Icon(icon, color: color)),
             Text(
               text,
               style: TextStyle(fontSize: 9, color: Colors.black),
@@ -290,7 +290,8 @@ class _MyHomePageState extends State<MyHomePage> {
             if (weighted.contains(e.position)) {
               weighted.remove(e.position);
             } else {
-              weighted.add(WeightedPoint(e.position.x, e.position.y, weight: 7));
+              weighted
+                  .add(WeightedPoint(e.position.x, e.position.y, weight: 7));
             }
           }
           setState(() {});

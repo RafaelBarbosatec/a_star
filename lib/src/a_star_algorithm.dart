@@ -96,7 +96,7 @@ class AStar {
       if (n.parent == null) {
         _analiseDistance(n, end, parent: current);
       }
-    if (!_doneList.contains(n)) {
+      if (!_doneList.contains(n)) {
         _waitList.add(n);
       }
     }
@@ -118,7 +118,7 @@ class AStar {
   /// Calculates the distance g and h
   void _analiseDistance(Tile current, Tile end, {required Tile parent}) {
     current.parent = parent;
-    current.g = parent.g +  current.weight;
+    current.g = parent.g + current.weight;
     current.h = _distance(current.position, end.position);
   }
 
@@ -126,7 +126,7 @@ class AStar {
   double _distance(Point<int> current, Point<int> target) {
     int toX = current.x - target.x;
     int toY = current.y - target.y;
-    return  Point(toX,toY).magnitude * 2;
+    return Point(toX, toY).magnitude * 2;
   }
 
   /// Resume path

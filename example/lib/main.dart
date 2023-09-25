@@ -256,7 +256,8 @@ class _MyHomePageState extends State<MyHomePage> {
             if (weighted.contains(e.position)) {
               weighted.remove(e.position);
             } else {
-              weighted.add(WeightedPoint(e.position.x, e.position.y, weight: 5));
+              weighted
+                  .add(WeightedPoint(e.position.x, e.position.y, weight: 5));
             }
           }
           setState(() {});
