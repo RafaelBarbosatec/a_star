@@ -332,7 +332,7 @@ class _MyHomePageState extends State<MyHomePage> {
       columns: columns,
       start: start,
       end: end,
-      weighed: weighted,
+      weighted: weighted,
       withDiagonal: false,
       barriers: [...barriers, ...targets],
     ).findSteps(steps: steps);
