@@ -1,14 +1,16 @@
 library a_star_algorithm;
 
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 
 /// Class responsible for calculating the best route using the A* algorithm.
 class AStar {
   final int rows;
   final int columns;
-  final Offset start;
-  final Offset end;
-  final List<Offset> barriers;
+  final Point<int> start;
+  final Point<int> end;
+  final List<Point<int>> barriers;
   final withDiagonal;
   List<Tile> _doneList = [];
   List<Tile> _waitList = [];
@@ -31,14 +33,14 @@ class AStar {
     required this.columns,
     required this.start,
     required this.end,
-    required List<Offset> freeSpaces,
+    required List<Point<int>> freeSpaces,
     this.withDiagonal = true,
   }) : barriers = [] {
     grid = _createGridWithFreeSpaces(rows, columns, freeSpaces);
   }
 
   /// Method that starts the search
-  Iterable<Offset> findThePath({ValueChanged<List<Offset>>? doneList}) {
+  Iterable<Point<int>> findThePath({ValueChanged<List<Point<int>>>? doneList}) {
     _doneList.clear();
     _waitList.clear();
 
@@ -48,15 +50,15 @@ class AStar {
 
     _addNeighbors(grid);
 
-    Tile startTile = grid[start.dx.toInt()][start.dy.toInt()];
-    Tile endTile = grid[end.dx.toInt()][end.dy.toInt()];
+    Tile startTile = grid[start.x.toInt()][start.y.toInt()];
+    Tile endTile = grid[end.x.toInt()][end.y.toInt()];
 
     Tile? winner = _getTileWinner(
       startTile,
       endTile,
     );
 
-    List<Offset> path = [end];
+    List<Point<int>> path = [end];
 
     if (winner != null) {
       Tile? tileAux = winner.parent;
@@ -76,12 +78,12 @@ class AStar {
 
   /// Method that create the grid using barriers
   List<List<Tile>> _createGridWithBarriers(
-      int rows, int columns, List<Offset> barriers) {
+      int rows, int columns, List<Point<int>> barriers) {
     List<List<Tile>> grid = [];
     List.generate(columns, (x) {
       List<Tile> rowList = [];
       List.generate(rows, (y) {
-        final offset = Offset(x.toDouble(), y.toDouble());
+        final offset = Point(x, y);
         bool isBarrie = barriers.where((element) {
           return element == offset;
         }).isNotEmpty;
@@ -102,13 +104,13 @@ class AStar {
   List<List<Tile>> _createGridWithFreeSpaces(
     int rows,
     int columns,
-    List<Offset> freeSpaces,
+    List<Point<int>> freeSpaces,
   ) {
     List<List<Tile>> grid = [];
     List.generate(columns, (x) {
       List<Tile> rowList = [];
       List.generate(rows, (y) {
-        final offset = Offset(x.toDouble(), y.toDouble());
+        final offset = Point<int>(x, y);
         bool isFreeSpace = freeSpaces.where((element) {
           return element == offset;
         }).isNotEmpty;
@@ -129,8 +131,8 @@ class AStar {
   void _addNeighbors(List<List<Tile>> grid) {
     grid.forEach((_) {
       _.forEach((element) {
-        int x = element.position.dx.toInt();
-        int y = element.position.dy.toInt();
+        int x = element.position.x;
+        int y = element.position.y;
 
         /// adds in top
         if (y > 0) {
@@ -250,16 +252,17 @@ class AStar {
 
   /// Calculates the distance between two tiles.
   int _distance(Tile tile1, Tile tile2) {
-    int distX = (tile1.position.dx.toInt() - tile2.position.dx.toInt()).abs();
-    int distY = (tile1.position.dy.toInt() - tile2.position.dy.toInt()).abs();
+    int distX = (tile1.position.x - tile2.position.x).abs();
+    int distY = (tile1.position.y - tile2.position.y).abs();
     return distX + distY;
   }
 
   /// Resume path
   /// Example:
   /// [(1,2),(1,3),(1,4),(1,5)] = [(1,2),(1,5)]
-  static List<Offset> resumePath(Iterable<Offset> path) {
-    List<Offset> newPath = _resumeDirection(path, TypeResumeDirection.axisX);
+  static List<Point<int>> resumePath(Iterable<Point<int>> path) {
+    List<Point<int>> newPath =
+        _resumeDirection(path, TypeResumeDirection.axisX);
     newPath = _resumeDirection(newPath, TypeResumeDirection.axisY);
     newPath = _resumeDirection(newPath, TypeResumeDirection.bottomLeft);
     newPath = _resumeDirection(newPath, TypeResumeDirection.bottomRight);
@@ -268,23 +271,23 @@ class AStar {
     return newPath;
   }
 
-  static List<Offset> _resumeDirection(
-    Iterable<Offset> path,
+  static List<Point<int>> _resumeDirection(
+    Iterable<Point<int>> path,
     TypeResumeDirection type,
   ) {
-    List<Offset> newPath = [];
-    List<List<Offset>> listOffset = [];
+    List<Point<int>> newPath = [];
+    List<List<Point<int>>> listOffset = [];
     int indexList = -1;
-    double currentX = 0;
-    double currentY = 0;
+    int currentX = 0;
+    int currentY = 0;
 
     path.forEach((element) {
-      final dxDiagonal = element.dx.floor();
-      final dyDiagonal = element.dy.floor();
+      final dxDiagonal = element.x;
+      final dyDiagonal = element.y;
 
       switch (type) {
         case TypeResumeDirection.axisX:
-          if (element.dx == currentX && listOffset.isNotEmpty) {
+          if (element.x == currentX && listOffset.isNotEmpty) {
             listOffset[indexList].add(element);
           } else {
             listOffset.add([element]);
@@ -292,7 +295,7 @@ class AStar {
           }
           break;
         case TypeResumeDirection.axisY:
-          if (element.dy == currentY && listOffset.isNotEmpty) {
+          if (element.y == currentY && listOffset.isNotEmpty) {
             listOffset[indexList].add(element);
           } else {
             listOffset.add([element]);
@@ -349,8 +352,8 @@ class AStar {
           break;
       }
 
-      currentX = element.dx;
-      currentY = element.dy;
+      currentX = element.x;
+      currentY = element.y;
     });
 
     listOffset.forEach((element) {
@@ -365,21 +368,21 @@ class AStar {
     return newPath;
   }
 
-  bool _isNeighbors(Offset start, Offset end) {
+  bool _isNeighbors(Point<int> start, Point<int> end) {
     bool isNeighbor = false;
-    if (start.dx + 1 == end.dx) {
+    if (start.x + 1 == end.x) {
       isNeighbor = true;
     }
 
-    if (start.dx - 1 == end.dx) {
+    if (start.x - 1 == end.x) {
       isNeighbor = true;
     }
 
-    if (start.dy + 1 == end.dy) {
+    if (start.y + 1 == end.y) {
       isNeighbor = true;
     }
 
-    if (start.dy - 1 == end.dy) {
+    if (start.y - 1 == end.y) {
       isNeighbor = true;
     }
 
@@ -389,7 +392,7 @@ class AStar {
 
 /// Class used to represent each cell
 class Tile {
-  final Offset position;
+  final Point<int> position;
   Tile? parent;
   final List<Tile> neighbors;
   final bool isBarrier;
