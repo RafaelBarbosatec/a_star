@@ -261,7 +261,8 @@ class AStar {
   /// Example:
   /// [(1,2),(1,3),(1,4),(1,5)] = [(1,2),(1,5)]
   static List<Point<int>> resumePath(Iterable<Point<int>> path) {
-    List<Point<int>> newPath = _resumeDirection(path, TypeResumeDirection.axisX);
+    List<Point<int>> newPath =
+        _resumeDirection(path, TypeResumeDirection.axisX);
     newPath = _resumeDirection(newPath, TypeResumeDirection.axisY);
     newPath = _resumeDirection(newPath, TypeResumeDirection.bottomLeft);
     newPath = _resumeDirection(newPath, TypeResumeDirection.bottomRight);

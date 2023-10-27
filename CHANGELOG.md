@@ -1,5 +1,6 @@
 ## [0.3.1]
 * Performance improvements.
+* BREAK: Now uses `Point<int>` instead of Offset
 
 ## [0.3.0]
 * Adds `AStar.byFreeSpaces`.
