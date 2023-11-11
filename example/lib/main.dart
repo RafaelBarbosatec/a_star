@@ -37,7 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
   TypeInput _typeInput = TypeInput.START_POINT;
 
   // benchmark timing
-  AsyncTimeTracker? timeTracker;
+  TimeTracker? timeTracker;
   int benchmark = 0;
 
   bool _showDoneList = true;
@@ -270,7 +270,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (timeTracker == null) return '';
     if (!timeTracker!.isFinished) return '';
     final duration = timeTracker!.duration;
-    return 'benchmark: inMicro: ${duration.inMicroseconds} inMilli: ${duration.inMilliseconds}';
+    return 'benchmark: inMicroseconds: ${duration.inMicroseconds}';
   }
 
   MaterialStateProperty<Color> _getColorSelected(TypeInput input) {
@@ -297,7 +297,7 @@ class _MyHomePageState extends State<MyHomePage> {
     List<Point<int>> done = [];
     late Iterable<Point<int>> result;
 
-    timeTracker = AsyncTimeTracker()
+    timeTracker = SyncTimeTracker()
       ..track(() {
         result = AStar(
           rows: rows,

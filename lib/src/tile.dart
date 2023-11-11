@@ -27,7 +27,6 @@ class Tile {
   @override
   bool operator ==(covariant Tile other) {
     if (identical(this, other)) return true;
-
     return other.position == position;
   }
 

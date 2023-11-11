@@ -1,49 +1,54 @@
 import 'dart:math';
 
+import 'package:a_star_algorithm/src/tile.dart';
+import 'package:a_star_algorithm/src/weight_point.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:a_star_algorithm/a_star_algorithm.dart';
 
-import 'models/tile.dart';
-
 /// Class responsible for calculating the best route using the A* algorithm.
 class AStar {
-  final int rows;
-  final int columns;
+  final int _rows;
+  final int _columns;
   final Point<int> start;
   final Point<int> end;
-  final List<Point<int>> barriers;
+  final List<Point<int>> _barriers;
   final List<WeightedPoint> weighted;
 
   final bool withDiagonal;
   final List<Tile> _doneList = [];
   final List<Tile> _waitList = [];
 
-  late List<List<Tile>> grid;
+  late List<List<Tile>> _grid;
 
   AStar({
-    required this.rows,
-    required this.columns,
+    required int rows,
+    required int columns,
     required this.start,
     required this.end,
-    required this.barriers,
-    this.weighted = const [],
+    required List<Point<int>> barriers,
+    this.weighted = const <WeightedPoint>[],
     this.withDiagonal = false,
-  }) {
-    grid = createGridWithBarriers();
+  })  : _rows = rows,
+        _columns = columns,
+        _barriers = barriers {
+    _grid = _createGridWithBarriers(
+        rows: _rows, columns: _columns, barriers: _barriers);
   }
 
   AStar.byFreeSpaces({
-    required this.rows,
-    required this.columns,
+    required int rows,
+    required int columns,
     required this.start,
     required this.end,
     required List<Point<int>> freeSpaces,
     this.weighted = const [],
     this.withDiagonal = true,
-  }) : barriers = [] {
-    grid = createGridWithFree(freeSpaces);
+  })  : _barriers = [],
+        _rows = rows,
+        _columns = columns {
+    _grid = _createGridWithFree(freeSpaces, rows: _rows, columns: _columns);
   }
 
   /// Method that starts the search
@@ -51,14 +56,14 @@ class AStar {
     _doneList.clear();
     _waitList.clear();
 
-    if (barriers.contains(end)) {
+    if (_barriers.contains(end)) {
       return [];
     }
 
-    Tile startTile = grid[start.x][start.y];
+    Tile startTile = _grid[start.x][start.y];
 
-    Tile endTile = grid[end.x][end.y];
-    addNeighbors(grid);
+    Tile endTile = _grid[end.x][end.y];
+    _addNeighbors(_grid);
     Tile? winner = _getTileWinner(
       startTile,
       endTile,
@@ -84,7 +89,34 @@ class AStar {
 
     return path.reversed;
   }
-  
+
+  /// Method that create the grid using barriers
+  List<List<Tile>> _createGridWithBarriers({
+    required int rows,
+    required int columns,
+    required List<Point> barriers,
+  }) {
+    List<List<Tile>> grid = [];
+    List.generate(columns, (x) {
+      List<Tile> rowList = [];
+      List.generate(rows, (y) {
+        final point = Point<int>(x, y);
+        final isBarrier = barriers.any((b) => b == point);
+        final weightedIndex = weighted.indexWhere((c) => c == point);
+        final type = isBarrier ? TileType.barrier : TileType.free;
+        rowList.add(
+          Tile(
+            point,
+            [],
+            weight: weightedIndex != -1 ? weighted[weightedIndex].weight : 1,
+            type: type,
+          ),
+        );
+      });
+      grid.add(rowList);
+    });
+    return grid;
+  }
 
   /// Method recursive that execute the A* algorithm
   Tile? _getTileWinner(Tile current, Tile end) {
@@ -258,6 +290,167 @@ class AStar {
     }
 
     return isNeighbor;
+  }
+
+  /// Method that create the grid using barriers
+  List<List<Tile>> _createGridWithFree(
+    List<Point<int>> freeSpaces, {
+    required int rows,
+    required int columns,
+  }) {
+    List<List<Tile>> grid = [];
+    List.generate(columns, (x) {
+      List<Tile> rowList = [];
+      List.generate(rows, (y) {
+        final point = Point<int>(x, y);
+        final costIndex = weighted.indexWhere((c) => c == point);
+        // any more faster then where
+        bool isFreeSpace = freeSpaces.any((element) {
+          return element == point;
+        });
+        final type = isFreeSpace ? TileType.free : TileType.barrier;
+
+        rowList.add(
+          Tile(
+            point,
+            [],
+            weight: costIndex != -1 ? weighted[costIndex].weight : 1,
+            type: type,
+          ),
+        );
+      });
+      grid.add(rowList);
+    });
+    return grid;
+  }
+
+  /// Adds neighbors to cells
+  void _addNeighbors(List<List<Tile>> grid) {
+    for (var row in grid) {
+      for (Tile tile in row) {
+        _chainNeigbors(tile, grid);
+      }
+    }
+  }
+
+  void _chainNeigbors(Tile tile, List<List<Tile>> grid) {
+    int x = tile.position.x;
+    int y = tile.position.y;
+
+    /// adds in top
+    if (y > 0) {
+      final t = grid[x][y - 1];
+      if (t.isFree) {
+        tile.neighbors.add(t);
+      }
+    }
+
+    /// adds in bottom
+    if (y < (grid.first.length - 1)) {
+      final t = grid[x][y + 1];
+      if (t.isFree) {
+        tile.neighbors.add(t);
+      }
+    }
+
+    /// adds in left
+    if (x > 0) {
+      final t = grid[x - 1][y];
+      if (t.isFree) {
+        tile.neighbors.add(t);
+      }
+    }
+
+    /// adds in right
+    if (x < (grid.length - 1)) {
+      final t = grid[x + 1][y];
+      if (t.isFree) {
+        tile.neighbors.add(t);
+      }
+    }
+
+    if (withDiagonal) {
+      /// adds in top-left
+      if (y > 0 && x > 0) {
+        final top = grid[x][y - 1];
+        final left = grid[x - 1][y];
+        final t = grid[x - 1][y - 1];
+        if (t.isFree && left.isFree && top.isFree) {
+          tile.neighbors.add(t);
+        }
+      }
+
+      /// adds in top-right
+      if (y > 0 && x < (grid.length - 1)) {
+        final top = grid[x][y - 1];
+        final right = grid[x + 1][y];
+        final t = grid[x + 1][y - 1];
+        if (t.isFree && top.isFree && right.isFree) {
+          tile.neighbors.add(t);
+        }
+      }
+
+      /// adds in bottom-left
+      if (x > 0 && y < (grid.first.length - 1)) {
+        final bottom = grid[x][y + 1];
+        final left = grid[x - 1][y];
+        final t = grid[x - 1][y + 1];
+        if (t.isFree && bottom.isFree && left.isFree) {
+          tile.neighbors.add(t);
+        }
+      }
+
+      /// adds in bottom-right
+      if (x < (grid.length - 1) && y < (grid.first.length - 1)) {
+        final bottom = grid[x][y + 1];
+        final right = grid[x + 1][y];
+        final t = grid[x + 1][y + 1];
+        if (t.isFree && bottom.isFree && right.isFree) {
+          tile.neighbors.add(t);
+        }
+      }
+    }
+  }
+}
+
+extension FindStepsExt on AStar {
+  List<Point<int>> findSteps({required int steps}) {
+    _addNeighbors(_grid);
+
+    Tile startTile = _grid[start.x][start.y];
+    final List<Tile> totalArea = [startTile];
+    final List<Tile> waitArea = [];
+
+    final List<Tile> currentArea = [...startTile.neighbors];
+    if (currentArea.isEmpty) {
+      return totalArea.map((tile) => tile.position).toList();
+    }
+    for (var element in startTile.neighbors) {
+      element.parent = startTile;
+      element.g = element.weight + startTile.weight;
+    }
+    for (var i = 1; i < steps + 2; i++) {
+      if (currentArea.isEmpty) continue;
+      for (var currentTile in currentArea) {
+        if (currentTile.g <= i) {
+          totalArea.add(currentTile);
+          for (var n in currentTile.neighbors) {
+            if (totalArea.contains(n)) continue;
+            if (n.parent == null) {
+              n.parent = currentTile;
+              n.g = n.weight + currentTile.g;
+            }
+            waitArea.add(n);
+          }
+        } else {
+          waitArea.add(currentTile);
+        }
+      }
+      currentArea.clear();
+      currentArea.addAll(waitArea);
+      waitArea.clear();
+    }
+    return totalArea.map((tile) => tile.position).toList();
   }
 }
 
