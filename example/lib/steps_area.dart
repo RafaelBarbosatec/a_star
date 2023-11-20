@@ -2,17 +2,16 @@ import 'dart:math';
 
 import 'package:a_star_algorithm/a_star_algorithm.dart';
 import 'package:flutter/material.dart';
-import 'package:timing/timing.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(StepsAreaApp());
 }
 
-class MyApp extends StatelessWidget {
+class StepsAreaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter Steps Area Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -23,9 +22,13 @@ class MyApp extends StatelessWidget {
 
 enum TypeInput {
   START_POINT,
+  END_POINT,
   BARRIERS,
   TARGETS,
   WATER,
+  STEPS,
+  FOUNDED_TARGET,
+  TARGETS_STEPS,
 }
 
 class MyHomePage extends StatefulWidget {
@@ -35,24 +38,18 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   TypeInput _typeInput = TypeInput.START_POINT;
-
-  // benchmark timing
-  TimeTracker? timeTracker;
-  int benchmark = 0;
-
+  int steps = 5;
   bool _showDoneList = true;
-  bool _withDiagonals = true;
   Point<int> start = Point<int>(0, 0);
+  Point<int> end = Point<int>(0, 0);
   List<Tile> tiles = [];
   List<Point<int>> barriers = [];
-  List<WeightedPoint> weighted = [
-    WeightedPoint(5, 5, weight: 5),
-    WeightedPoint(6, 5, weight: 5),
-    WeightedPoint(7, 5, weight: 5),
-    WeightedPoint(7, 6, weight: 5),
-    WeightedPoint(8, 5, weight: 5),
-  ];
+  List<WeightedPoint> weighted = [];
   List<Point<int>> targets = [];
+
+  /// turn based area
+  List<Point<int>> stepsArea = [];
+  List<Point<int>> foundedEnemies = [];
   int rows = 20;
   int columns = 20;
 
@@ -73,36 +70,12 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('A* double tap to find path'),
+        title: Text('A* tbs'),
       ),
       body: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: 40,
-            child: Row(
-              children: [
-                if (_showDoneList)
-                  Text(
-                    'done list ${tiles.where((i) => i.done).length},\npath length ${tiles.where((i) => i.selected).length} ${_getBenchmark()}',
-                  )
-              ],
-            ),
-          ),
-          Row(
-            children: [
-              Text('with diagonals'),
-              Switch(
-                value: _withDiagonals,
-                onChanged: (value) {
-                  setState(() {
-                    _withDiagonals = value;
-                  });
-                },
-              ),
-            ],
-          ),
           Padding(
             padding: const EdgeInsets.all(20.0),
             child: Row(
@@ -118,6 +91,40 @@ class _MyHomePageState extends State<MyHomePage> {
                     backgroundColor: _getColorSelected(TypeInput.START_POINT),
                   ),
                   child: Text('START'),
+                ),
+                Column(
+                  children: [
+                    Text('steps $steps'.toUpperCase()),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.add),
+                          onPressed: () {
+                            setState(() {
+                              steps += 1;
+                            });
+                          },
+                          style: ButtonStyle(
+                            backgroundColor: _getColorSelected(TypeInput.WATER),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        IconButton(
+                          icon: Icon(Icons.remove),
+                          onPressed: () {
+                            if (steps > 0)
+                              setState(() {
+                                steps -= 1;
+                              });
+                          },
+                          style: ButtonStyle(
+                            backgroundColor: _getColorSelected(TypeInput.WATER),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -187,55 +194,82 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _start,
+        tooltip: 'Find path',
+        child: Icon(Icons.map),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
   Widget _buildItem(Tile e) {
     Color color = Colors.white;
     String text = '1';
+    IconData? icon;
     if (weighted.contains(e.position)) {
-      color = Colors.cyan;
+      color = Colors.cyan.withOpacity(0.5);
       text = weighted
           .firstWhere((i) => i.x == e.position.x && i.y == e.position.y)
           .weight
           .toString();
+      icon = Icons.water;
     }
     if (barriers.contains(e.position)) {
-      color = Colors.red.withOpacity(.7);
-      text = 'barrier';
+      color = Colors.red;
+      icon = Icons.do_not_step_outlined;
     }
     if (e.done) {
-      color = Colors.black.withOpacity(.2);
+      color = Colors.black;
     }
     if (e.selected && _showDoneList) {
-      color = Colors.green.withOpacity(.7);
+      color = Colors.green;
     }
 
     if (targets.contains(e.position)) {
-      color = Colors.purple.withOpacity(.7);
-      text = text + '\ntarget';
+      color = Colors.purple;
+      icon = Icons.man;
     }
 
     if (e.position == start) {
-      color = Colors.yellow.withOpacity(.7);
-      text = text + '\nstart';
+      color = Colors.black;
+      icon = Icons.person;
+    }
+    if (e.position == end) {
+      color = Colors.green;
+      icon = Icons.flag;
+    }
+    if (stepsArea.contains(e.position)) {
+      color = Colors.green;
+    }
+    if (targets.contains(e.position)) {
+      color = Colors.purple;
     }
 
     return Ink(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.black54, width: 1.0),
-        color: color,
+        color: color.withOpacity(.3),
       ),
       height: 10,
       child: InkWell(
-        child: Text(
-          text,
-          style: TextStyle(fontSize: 9, color: Colors.black),
+        child: Stack(
+          children: [
+            if (icon != null) Center(child: Icon(icon, color: color)),
+            Text(
+              text,
+              style: TextStyle(fontSize: 9, color: Colors.black),
+            ),
+          ],
         ),
-        onDoubleTap: () => _start(e.position),
+        onLongPress: () {},
+        onDoubleTap: () {},
         onTap: () {
           if (_typeInput == TypeInput.START_POINT) {
             start = e.position;
+          }
+
+          if (_typeInput == TypeInput.END_POINT) {
+            end = e.position;
           }
 
           if (_typeInput == TypeInput.BARRIERS) {
@@ -257,20 +291,13 @@ class _MyHomePageState extends State<MyHomePage> {
               weighted.remove(e.position);
             } else {
               weighted
-                  .add(WeightedPoint(e.position.x, e.position.y, weight: 5));
+                  .add(WeightedPoint(e.position.x, e.position.y, weight: 7));
             }
           }
           setState(() {});
         },
       ),
     );
-  }
-
-  String _getBenchmark() {
-    if (timeTracker == null) return '';
-    if (!timeTracker!.isFinished) return '';
-    final duration = timeTracker!.duration;
-    return 'benchmark: inMicroseconds: ${duration.inMicroseconds}';
   }
 
   MaterialStateProperty<Color> _getColorSelected(TypeInput input) {
@@ -283,53 +310,37 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (input) {
       case TypeInput.START_POINT:
         return Colors.yellow;
+      case TypeInput.END_POINT:
+        return Colors.green;
       case TypeInput.BARRIERS:
         return Colors.red;
       case TypeInput.TARGETS:
         return Colors.purple;
       case TypeInput.WATER:
         return Colors.blue;
+      case TypeInput.STEPS:
+        return Colors.blueGrey[700]!;
+      case TypeInput.TARGETS_STEPS:
+      case TypeInput.FOUNDED_TARGET:
+        return Colors.deepPurple[700]!;
     }
   }
 
-  void _start(Point<int> target) {
+  void _start() {
     _cleanTiles();
-    List<Point<int>> done = [];
-    late Iterable<Point<int>> result;
-
-    timeTracker = SyncTimeTracker()
-      ..track(() {
-        result = AStar(
-          rows: rows,
-          columns: columns,
-          start: start,
-          end: target,
-          weighted: weighted,
-          withDiagonal: _withDiagonals,
-          barriers: [...barriers, ...targets],
-        ).findThePath(doneList: (doneList) {
-          done = doneList;
-        });
-      });
-
-    for (var element in result) {
-      done.remove(element);
-    }
-
-    done.remove(start);
+    final result = AStar(
+      rows: rows,
+      columns: columns,
+      start: start,
+      end: end,
+      weighted: weighted,
+      withDiagonal: false,
+      barriers: [...barriers, ...targets],
+    ).findSteps(steps: steps);
+    print('Steps areas ${result}');
 
     setState(() {
-      for (var element in tiles) {
-        element.selected = result.any((r) {
-          return r.x == element.position.x && r.y == element.position.y;
-        });
-
-        if (_showDoneList) {
-          element.done = done.where((r) {
-            return r == element.position;
-          }).isNotEmpty;
-        }
-      }
+      stepsArea = List.of(result);
     });
   }
 
