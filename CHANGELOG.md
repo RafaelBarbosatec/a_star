@@ -1,12 +1,16 @@
-
 ## [0.4.0]
-* new classes Point, WeighedPoint
+* new classes WeighedPoint
 * Improved perfomance in most usage cases
 * added `Astar.findSteps`
 * added example for find steps
 * added benchmark in example
 * improve examples
-* min sdk: 2.18.0
+
+## [0.3.1]
+* Performance improvements.
+* BREAK: Now uses `Point<int>` instead of Offset
+
+
 
 ## [0.3.0]
 * Adds `AStar.byFreeSpaces`.

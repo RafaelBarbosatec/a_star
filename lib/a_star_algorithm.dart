@@ -5,7 +5,6 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 
 /// Class responsible for calculating the best route using the A* algorithm.
-
 class AStar {
   final int _rows;
   final int _columns;
