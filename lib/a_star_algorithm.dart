@@ -370,19 +370,21 @@ class AStar {
 
   bool _isNeighbors(Point<int> start, Point<int> end) {
     bool isNeighbor = false;
-    if (start.x + 1 == end.x) {
-      isNeighbor = true;
-    }
+    
+    int startX = start.x;
+    int startY = start.y;
+    int endX = end.x;
+    int endY = end.y;
 
-    if (start.x - 1 == end.x) {
-      isNeighbor = true;
-    }
-
-    if (start.y + 1 == end.y) {
-      isNeighbor = true;
-    }
-
-    if (start.y - 1 == end.y) {
+    if (startX + 1 == endX && startY == endY || //right
+            startX - 1 == endX && startY == endY || //left
+            startX == endX && startY + 1 == endY || //bottom
+            startX == endX && startY - 1 == endY || //top
+            startX + 1 == endX && startY + 1 == endY || //bottom-right
+            startX - 1 == endX && startY - 1 == endY || //top-left
+            startX - 1 == endX && startY + 1 == endY || //bottom-left
+            startX + 1 == endX && startY - 1 == endY //top-right
+        ) {
       isNeighbor = true;
     }
 
