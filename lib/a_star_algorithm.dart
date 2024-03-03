@@ -13,6 +13,7 @@ class AStar {
   final List<Point<int>> barriers;
   List<Tile> _doneList = [];
   List<Tile> _waitList = [];
+  final bool withDiagonal;
 
   late List<List<Tile>> grid;
 
@@ -22,6 +23,7 @@ class AStar {
     required this.start,
     required this.end,
     required this.barriers,
+    this.withDiagonal = true,
   }) {
     grid = _createGridWithBarriers(rows, columns, barriers);
   }
@@ -164,6 +166,7 @@ class AStar {
           }
         }
 
+        if (withDiagonal) {
           /// adds in top-left
           if (y > 0 && x > 0) {
             final t = grid[x - 1][y - 1];
@@ -195,7 +198,7 @@ class AStar {
               element.neighbors.add(t);
             }
           }
-        
+        }
       });
     });
   }
