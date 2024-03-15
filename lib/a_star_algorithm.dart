@@ -11,7 +11,7 @@ class AStar {
   final Point<int> start;
   final Point<int> end;
   final List<Point<int>> barriers;
-  final withDiagonal;
+  final bool withDiagonal;
   List<Tile> _doneList = [];
   List<Tile> _waitList = [];
 
@@ -65,7 +65,7 @@ class AStar {
     return path.reversed;
   }
 
-  /// Method that create the grid 
+  /// Method that create the grid
   List<List<Tile>> _createGrid(
       int rows, int columns, List<Point<int>> barriers) {
     List<List<Tile>> grid = [];
@@ -332,7 +332,7 @@ class AStar {
 
   bool _isNeighbors(Point<int> start, Point<int> end) {
     bool isNeighbor = false;
-    
+
     int startX = start.x;
     int startY = start.y;
     int endX = end.x;
@@ -347,7 +347,7 @@ class AStar {
     }
 
     if (withDiagonal) {
-        if (startX + 1 == endX && startY + 1 == endY || //bottom-right
+      if (startX + 1 == endX && startY + 1 == endY || //bottom-right
               startX - 1 == endX && startY - 1 == endY || //top-left
               startX - 1 == endX && startY + 1 == endY || //bottom-left
               startX + 1 == endX && startY - 1 == endY //top-right
