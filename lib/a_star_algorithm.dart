@@ -25,18 +25,7 @@ class AStar {
     required this.barriers,
     this.withDiagonal = true,
   }) {
-    grid = _createGridWithBarriers(rows, columns, barriers);
-  }
-
-  AStar.byFreeSpaces({
-    required this.rows,
-    required this.columns,
-    required this.start,
-    required this.end,
-    required List<Point<int>> freeSpaces,
-    this.withDiagonal = true,
-  }) : barriers = [] {
-    grid = _createGridWithFreeSpaces(rows, columns, freeSpaces);
+    grid = _createGrid(rows, columns, barriers);
   }
 
   /// Method that starts the search
@@ -76,8 +65,8 @@ class AStar {
     return path.reversed;
   }
 
-  /// Method that create the grid using barriers
-  List<List<Tile>> _createGridWithBarriers(
+  /// Method that create the grid 
+  List<List<Tile>> _createGrid(
       int rows, int columns, List<Point<int>> barriers) {
     List<List<Tile>> grid = [];
     List.generate(columns, (x) {
@@ -92,33 +81,6 @@ class AStar {
             offset,
             [],
             isBarrier: isBarrie,
-          ),
-        );
-      });
-      grid.add(rowList);
-    });
-    return grid;
-  }
-
-  /// Method that create the grid using barriers
-  List<List<Tile>> _createGridWithFreeSpaces(
-    int rows,
-    int columns,
-    List<Point<int>> freeSpaces,
-  ) {
-    List<List<Tile>> grid = [];
-    List.generate(columns, (x) {
-      List<Tile> rowList = [];
-      List.generate(rows, (y) {
-        final offset = Point<int>(x, y);
-        bool isFreeSpace = freeSpaces.where((element) {
-          return element == offset;
-        }).isNotEmpty;
-        rowList.add(
-          Tile(
-            offset,
-            [],
-            isBarrier: !isFreeSpace,
           ),
         );
       });
