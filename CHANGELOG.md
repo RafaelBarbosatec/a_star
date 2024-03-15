@@ -1,4 +1,4 @@
-## Next
+## [0.3.2]
 * Some improvements. [#8](https://github.com/RafaelBarbosatec/a_star/pull/8) Thanks [Horned-Nonsense](https://github.com/Horned-Nonsense)
 
 ## [0.3.1]
