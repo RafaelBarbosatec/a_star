@@ -13,16 +13,16 @@ To use this plugin, add `a_star` as a [dependency in your pubspec.yaml file](htt
 
 ``` dart
 import 'package:flutter/material.dart';
- Iterable<Offset> result = AStar(
+ Iterable<Point> result = AStar(
       rows: 20,
       columns: 20,
-      start: Offset(5,0),
-      end: Offset(8,19),
+      start: Point(5,0),
+      end: Point(8,19),
       barriers: [
-        Offset(10,5),
-        Offset(10,6),
-        Offset(10,7),
-        Offset(10,8),
+        Point(10,5),
+        Point(10,6),
+        Point(10,7),
+        Point(10,8),
       ],
     ).findThePath();
 ```
