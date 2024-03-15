@@ -11,9 +11,9 @@ class AStar {
   final Point<int> start;
   final Point<int> end;
   final List<Point<int>> barriers;
-  final withDiagonal;
   List<Tile> _doneList = [];
   List<Tile> _waitList = [];
+  final bool withDiagonal;
 
   late List<List<Tile>> grid;
 
@@ -169,40 +169,32 @@ class AStar {
         if (withDiagonal) {
           /// adds in top-left
           if (y > 0 && x > 0) {
-            final top = grid[x][y - 1];
-            final left = grid[x - 1][y];
             final t = grid[x - 1][y - 1];
-            if (!t.isBarrier && !left.isBarrier && !top.isBarrier) {
+            if (!t.isBarrier) {
               element.neighbors.add(t);
             }
           }
 
           /// adds in top-right
           if (y > 0 && x < (grid.length - 1)) {
-            final top = grid[x][y - 1];
-            final right = grid[x + 1][y];
             final t = grid[x + 1][y - 1];
-            if (!t.isBarrier && !top.isBarrier && !right.isBarrier) {
+            if (!t.isBarrier) {
               element.neighbors.add(t);
             }
           }
 
           /// adds in bottom-left
           if (x > 0 && y < (grid.first.length - 1)) {
-            final bottom = grid[x][y + 1];
-            final left = grid[x - 1][y];
             final t = grid[x - 1][y + 1];
-            if (!t.isBarrier && !bottom.isBarrier && !left.isBarrier) {
+            if (!t.isBarrier) {
               element.neighbors.add(t);
             }
           }
 
           /// adds in bottom-right
           if (x < (grid.length - 1) && y < (grid.first.length - 1)) {
-            final bottom = grid[x][y + 1];
-            final right = grid[x + 1][y];
             final t = grid[x + 1][y + 1];
-            if (!t.isBarrier && !bottom.isBarrier && !right.isBarrier) {
+            if (!t.isBarrier) {
               element.neighbors.add(t);
             }
           }
