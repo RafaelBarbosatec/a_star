@@ -7,12 +7,13 @@
 A* algorithm
 
 # Usage
-To use this plugin, add `a_star` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
+To use this package, add `a_star_algorithm` as a [dependency in your pubspec.yaml file](https://docs.flutter.dev/packages-and-plugins/using-packages).
 
 ### Example
 
 ``` dart
-import 'package:flutter/material.dart';
+import 'dart:math';
+import 'package:a_star_algorithm/a_star_algorithm.dart';
  Iterable<Point> result = AStar(
       rows: 20,
       columns: 20,
