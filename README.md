@@ -14,7 +14,7 @@ To use this package, add `a_star_algorithm` as a [dependency in your pubspec.yam
 ``` dart
 
 void main() {
-  Iterable<Point> result = AStar(
+  Iterable<(int, int)> result = AStar(
     rows: 20,
     columns: 20,
     start: (5,0),
