@@ -1,14 +1,11 @@
-import 'dart:math';
-
 import 'package:a_star_algorithm/a_star_algorithm.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(_MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class _MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -16,30 +13,30 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: _MyHomePage(),
     );
   }
 }
 
 enum TypeInput {
-  START_POINT,
-  END_POINT,
-  BARRIERS,
+  startPoint,
+  endPoint,
+  barriers,
 }
 
-class MyHomePage extends StatefulWidget {
+class _MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  TypeInput _typeInput = TypeInput.START_POINT;
+class _MyHomePageState extends State<_MyHomePage> {
+  TypeInput _typeInput = TypeInput.startPoint;
 
   bool _showDoneList = false;
-  Point<int> start = Point(0, 0);
-  Point<int> end = Point(0, 0);
+  (int, int) start = (0, 0);
+  (int, int) end = (0, 0);
   List<Tile> tiles = [];
-  List<Point<int>> barriers = [];
+  List<(int, int)> barriers = [];
   int rows = 20;
   int columns = 20;
 
@@ -47,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     List.generate(rows, (y) {
       List.generate(columns, (x) {
-        final offset = Point(x, y);
+        final offset = (x, y);
         tiles.add(
           Tile(offset),
         );
@@ -60,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('A*'),
+        title: const Text('A*'),
       ),
       body: Column(
         mainAxisSize: MainAxisSize.min,
@@ -74,35 +71,35 @@ class _MyHomePageState extends State<MyHomePage> {
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      _typeInput = TypeInput.START_POINT;
+                      _typeInput = TypeInput.startPoint;
                     });
                   },
                   style: ButtonStyle(
-                    backgroundColor: _getColorSelected(TypeInput.START_POINT),
+                    backgroundColor: _getColorSelected(TypeInput.startPoint),
                   ),
-                  child: Text('START'),
+                  child: const Text('START'),
                 ),
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      _typeInput = TypeInput.END_POINT;
+                      _typeInput = TypeInput.endPoint;
                     });
                   },
                   style: ButtonStyle(
-                    backgroundColor: _getColorSelected(TypeInput.END_POINT),
+                    backgroundColor: _getColorSelected(TypeInput.endPoint),
                   ),
-                  child: Text('END'),
+                  child: const Text('END'),
                 ),
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      _typeInput = TypeInput.BARRIERS;
+                      _typeInput = TypeInput.barriers;
                     });
                   },
                   style: ButtonStyle(
-                    backgroundColor: _getColorSelected(TypeInput.BARRIERS),
+                    backgroundColor: _getColorSelected(TypeInput.barriers),
                   ),
-                  child: Text('BARRIES'),
+                  child: const Text('BARRIES'),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -111,17 +108,15 @@ class _MyHomePageState extends State<MyHomePage> {
                       _cleanTiles();
                     });
                   },
-                  child: Text('CLEAN'),
-                )
+                  child: const Text('CLEAN'),
+                ),
               ],
             ),
           ),
           Expanded(
             child: GridView.count(
               crossAxisCount: columns,
-              children: tiles.map((e) {
-                return _buildItem(e);
-              }).toList(),
+              children: tiles.map(_buildItem).toList(),
             ),
           ),
           Row(
@@ -134,7 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   });
                 },
               ),
-              Text('Show done list')
+              const Text('Show done list'),
             ],
           ),
         ],
@@ -142,13 +137,13 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _start,
         tooltip: 'Find path',
-        child: Icon(Icons.map),
+        child: const Icon(Icons.map),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
   Widget _buildItem(Tile e) {
-    Color color = Colors.white;
+    var color = Colors.white;
     if (e.selected) {
       color = Colors.blue;
     } else if (e.position == start) {
@@ -163,15 +158,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return InkWell(
       onTap: () {
-        if (_typeInput == TypeInput.START_POINT) {
+        if (_typeInput == TypeInput.startPoint) {
           start = e.position;
         }
 
-        if (_typeInput == TypeInput.END_POINT) {
+        if (_typeInput == TypeInput.endPoint) {
           end = e.position;
         }
 
-        if (_typeInput == TypeInput.BARRIERS) {
+        if (_typeInput == TypeInput.barriers) {
           if (barriers.contains(e.position)) {
             barriers.remove(e.position);
           } else {
@@ -190,37 +185,39 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  MaterialStateProperty<Color> _getColorSelected(TypeInput input) {
-    return MaterialStateProperty.all(
+  WidgetStateProperty<Color> _getColorSelected(TypeInput input) {
+    return WidgetStateProperty.all(
       _typeInput == input ? _getColorByType(input) : Colors.grey,
     );
   }
 
   Color _getColorByType(TypeInput input) {
     switch (input) {
-      case TypeInput.START_POINT:
+      case TypeInput.startPoint:
         return Colors.yellow;
-      case TypeInput.END_POINT:
+      case TypeInput.endPoint:
         return Colors.green;
-      case TypeInput.BARRIERS:
+      case TypeInput.barriers:
         return Colors.red;
     }
   }
 
   void _start() {
     _cleanTiles();
-    List<Point<int>> done = [];
+    var done = <(int, int)>[];
     final result = AStar(
       rows: rows,
       columns: columns,
       start: start,
       end: end,
       barriers: barriers,
-    ).findThePath(doneList: (doneList) {
-      done = doneList;
-    });
+    ).findThePath(
+      doneList: (doneList) {
+        done = doneList;
+      },
+    );
 
-    print(AStar.resumePath(result));
+    print(AStar.simplifyPath(result));
 
     result.forEach((element) {
       done.remove(element);
@@ -253,7 +250,7 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class Tile {
-  final Point<int> position;
+  final (int, int) position;
   bool selected = false;
   bool done = false;
 

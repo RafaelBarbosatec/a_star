@@ -12,20 +12,21 @@ To use this package, add `a_star_algorithm` as a [dependency in your pubspec.yam
 ### Example
 
 ``` dart
-import 'dart:math';
-import 'package:a_star_algorithm/a_star_algorithm.dart';
- Iterable<Point> result = AStar(
-      rows: 20,
-      columns: 20,
-      start: Point(5,0),
-      end: Point(8,19),
-      barriers: [
-        Point(10,5),
-        Point(10,6),
-        Point(10,7),
-        Point(10,8),
-      ],
-    ).findThePath();
+
+void main() {
+  Iterable<Point> result = AStar(
+    rows: 20,
+    columns: 20,
+    start: (5,0),
+    end: (8,19),
+    barriers: [
+      (10,5),
+      (10,6),
+      (10,7),
+      (10,8),
+    ],
+  ).findThePath();
+}
 ```
 
 [Demo Online](https://rafaelbarbosatec.github.io/a_star/)
