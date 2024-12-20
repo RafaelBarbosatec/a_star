@@ -1,5 +1,4 @@
 import 'package:meta/meta.dart';
-import 'package:collection/collection.dart';
 
 typedef ValueChanged<T> = void Function(T value);
 
@@ -24,7 +23,7 @@ class AStar {
   late final List<List<Tile>> grid;
 
   final _doneList = <Tile>[];
-  final _waitList = QueueList<Tile>();
+  final _waitList = <Tile>[];
 
   /// Finds the shortest path between the [start] and [end] points.
   Iterable<(int, int)> findThePath({
@@ -127,30 +126,34 @@ class AStar {
     }
   }
 
-  /// Iterative method that executes the A* algorithm.
-  Tile? _getTileWinner(Tile start, Tile end) {
-    _waitList.add(start);
+  /// Recursive method that executes the A* algorithm.
+  Tile? _getTileWinner(Tile current, Tile end) {
+    if (current == end) {
+      return current;
+    }
+    _waitList.remove(current);
 
-    while (_waitList.isNotEmpty) {
-      final current = _waitList.removeFirst();
+    current.neighbors.forEach((element) {
+      _analyzeDistance(element, end, parent: current);
+    });
 
-      if (current == end) {
-        return current;
+    _doneList.add(current);
+
+    _waitList.addAll(
+      current.neighbors.where((element) {
+        return !_doneList.contains(element);
+      }),
+    );
+
+    _waitList.sort((a, b) => a.totalCost.compareTo(b.totalCost));
+
+    for (final element in _waitList.toList()) {
+      if (!_doneList.contains(element)) {
+        final result = _getTileWinner(element, end);
+        if (result != null) {
+          return result;
+        }
       }
-
-      current.neighbors.forEach((element) {
-        _analyzeDistance(element, end, parent: current);
-      });
-
-      _doneList.add(current);
-
-      _waitList.addAll(
-        current.neighbors.where((element) {
-          return !_doneList.contains(element);
-        }),
-      );
-
-      _waitList.sort((a, b) => a.totalCost.compareTo(b.totalCost));
     }
 
     return null;
