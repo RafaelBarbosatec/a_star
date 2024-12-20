@@ -1,9 +1,13 @@
+## [0.4.0]
+* BREAK: Now uses `(int, int)` instead of Point
+* Flutter is no longer a dependency
+
 ## [0.3.2]
 * Some improvements. [#8](https://github.com/RafaelBarbosatec/a_star/pull/8) Thanks [Horned-Nonsense](https://github.com/Horned-Nonsense)
 
 ## [0.3.1]
 * Performance improvements.
-* BREAK: Now uses `(int, int)` instead of Offset
+* BREAK: Now uses `Point<int>` instead of Offset
 
 ## [0.3.0]
 * Adds `AStar.byFreeSpaces`.
