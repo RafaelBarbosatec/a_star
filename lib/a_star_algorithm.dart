@@ -126,32 +126,25 @@ class AStar {
     }
   }
 
-  /// Recursive method that executes the A* algorithm.
-  Tile? _getTileWinner(Tile current, Tile end) {
-    if (current == end) {
-      return current;
-    }
-    _waitList.remove(current);
+  Tile? _getTileWinner(Tile start, Tile end) {
+    _waitList.add(start);
 
-    current.neighbors.forEach((element) {
-      _analyzeDistance(element, end, parent: current);
-    });
+    while (_waitList.isNotEmpty) {
+      _waitList.sort((a, b) => a.totalCost.compareTo(b.totalCost));
+      final current = _waitList.removeAt(0);
 
-    _doneList.add(current);
+      if (current == end) {
+        return current;
+      }
 
-    _waitList.addAll(
-      current.neighbors.where((element) {
-        return !_doneList.contains(element);
-      }),
-    );
+      _doneList.add(current);
 
-    _waitList.sort((a, b) => a.totalCost.compareTo(b.totalCost));
-
-    for (final element in _waitList.toList()) {
-      if (!_doneList.contains(element)) {
-        final result = _getTileWinner(element, end);
-        if (result != null) {
-          return result;
+      for (final neighbor in current.neighbors) {
+        if (!_doneList.contains(neighbor)) {
+          _analyzeDistance(neighbor, end, parent: current);
+          if (!_waitList.contains(neighbor)) {
+            _waitList.add(neighbor);
+          }
         }
       }
     }
