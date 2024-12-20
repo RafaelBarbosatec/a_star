@@ -1,6 +1,6 @@
 name: a_star_algorithm
 description: Package that uses the A * algorithm to find a way to the destination through the barriers.
-version: 0.3.2
+version: 0.4.0
 repository: https://github.com/RafaelBarbosatec/a_star
 topics:
   - astar
@@ -11,7 +11,7 @@ environment:
   sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
-  meta: ^1.16.0
+  meta: ^1.15.0
 
 dev_dependencies:
   flame_lint: ^1.2.1
