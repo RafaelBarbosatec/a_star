@@ -44,11 +44,11 @@ class AStar {
     final path = [end];
 
     if (winner != null) {
-      var currentTile = winner.parent;
-      do {
-        path.add(currentTile!.position);
-        currentTile = currentTile.parent;
-      } while (currentTile != null);
+      var parent = winner.parent;
+      for (var i = 0; i < winner.costFromStart - 1; i++) {
+        path.add(parent!.position);
+        parent = parent.parent;
+      }
     }
     path.add(start);
     doneList?.call(_doneList.map((e) => e.position).toList());
