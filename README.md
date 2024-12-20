@@ -1,4 +1,5 @@
 [![pub package](https://img.shields.io/pub/v/a_star_algorithm.svg)](https://pub.dev/packages/a_star_algorithm)
+[![Code Quality](https://github.com/RafaelBarbosatec/a_star/actions/workflows/unit.yml/badge.svg)](https://github.com/RafaelBarbosatec/a_star/actions/workflows/unit.yml)
 
 # a_star_algorithm
 
