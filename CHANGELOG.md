@@ -1,5 +1,5 @@
 ## [0.4.0]
-* BREAK: Now uses `(int, int)` instead of Point
+* BREAK: Now uses `(int, int)` instead of Point. Thanks [spydon](https://github.com/spydon)!
 * Flutter is no longer a dependency
 
 ## [0.3.2]
